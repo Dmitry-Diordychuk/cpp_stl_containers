@@ -231,76 +231,35 @@ namespace ft
 			void sort (Compare comp);
 		void reverse();
 
-		class iterator
+		class _List_iterator_base
 		{
 			private:
-				t_node	*_next;
-				t_node	*_prev;
-				t_node	*_cur;
+				t_node *_next;
+				t_node *_prev;
+				t_node *_cur;
 			public:
-				typedef bidirectional_iterator_tag	iterator_category;
-				typedef value_type					value_type;
-				typedef difference_type				difference_type;
-				typedef pointer						pointer;
-				typedef reference					reference;
-
-				iterator() : _next(NULL), _prev(NULL), _cur(NULL) {};
-				iterator(t_node *current) : _next(current->next), _prev(current->prev), _cur(current) {};
-				iterator(const iterator& other) : _next(other._next), _prev(other._prev), _cur(other._cur) {};
-				~iterator() {};
-
-				iterator& operator= (const iterator& rhs) {
-					if (this == &rhs)
-						return (*this);
+				_List_iterator_base() {};
+				_List_iterator_base(t_node *node) : _next(node->next), _prev(node->prev), _cur(node) {};
+				_List_iterator_base(const _List_iterator_base& x) : _next(x._next), _prev(x._prev), _cur(x._cur) {};
+				~_List_iterator_base() {};
+				_List_iterator_base& operator=(const _List_iterator_base& rhs){
 					this->_next = rhs._next;
 					this->_prev = rhs._prev;
 					this->_cur = rhs._cur;
 					return (*this);
 				};
-				bool operator== (const iterator& other) const {
-					if (this->_cur == other._cur)
-						return (true);
-					return (false);
+
+				t_node *getCurrent() const{
+					return (_cur);
 				};
-				bool operator!= (const iterator& other) const {
-					if (this->_cur != other._cur)
-						return (true);
-					return (false);
-				};
-				iterator& operator++ () {
+
+				bool operator== (const _List_iterator_base& other) const {return (this->_cur == other._cur);};
+				bool operator!= (const _List_iterator_base& other) const {return (this->_cur != other._cur);};
+
+				_List_iterator_base& increment () {
 					if (this->_next != NULL)
 					{
 						t_node *temp = this->_next;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
-					return (*this);
-				};
-				iterator& operator++ (int) {
-					if (this->_next != NULL)
-					{
-						t_node *temp = this->_next;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
-					return (*this);
-				};
-				iterator& operator-- () {
-					if (this->_prev != NULL)
-					{
-						t_node *temp = this->_prev;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
-					return (*this);
-				};
-				iterator& operator-- (int) {
-					if (this->_prev != NULL)
-					{
-						t_node *temp = this->_prev;
 						this->_next = temp->next;
 						this->_prev = temp->prev;
 						this->_cur = temp;
@@ -308,100 +267,74 @@ namespace ft
 					return (*this);
 				};
 
-				reference operator*() const {
-					return (*_cur->data);
-				};
-				pointer operator->() const {
-					return (_cur->data);
+				_List_iterator_base& decrement () {
+					if (this->_prev != NULL)
+					{
+						t_node *temp = this->_prev;
+						this->_next = temp->next;
+						this->_prev = temp->prev;
+						this->_cur = temp;
+					}
+					return (*this);
 				};
 		};
 
-		class const_iterator
+		template <typename Tp, typename Ref, typename Ptr>
+		class _List_iterator : public _List_iterator_base
 		{
-			private:
-				t_node	*_next;
-				t_node	*_prev;
-				t_node	*_cur;
 			public:
-				typedef bidirectional_iterator_tag	iterator_category;
-				typedef const value_type			value_type;
-				typedef difference_type				difference_type;
-				typedef const pointer				pointer;
-				typedef const T&					reference;
+				typedef _List_iterator<Tp, Tp&, Tp*>				iterator;
+				typedef _List_iterator<Tp, Ref, Ptr>				self;
 
-				const_iterator() : _next(NULL), _prev(NULL), _cur(NULL) {};
-				const_iterator(const iterator&) {};
-				const_iterator(t_node *current) : _next(current->next), _prev(current->prev), _cur(current) {};
-				const_iterator(const const_iterator& other) : _next(other._next), _prev(other._prev), _cur(other._cur) {};
-				~const_iterator() {};
+				typedef bidirectional_iterator_tag					iterator_category;
+				typedef Tp											value_type;
+				typedef std::ptrdiff_t								difference_type;
+				typedef Ptr											pointer;
+				typedef Ref											reference;
 
-				const_iterator& operator= (const const_iterator& rhs) {
-					if (this == &rhs)
-						return (*this);
-					this->_next = rhs._next;
-					this->_prev = rhs._prev;
-					this->_cur = rhs._cur;
+				_List_iterator() {};
+				_List_iterator(t_node *current) : _List_iterator_base(current) {};
+				_List_iterator(const iterator& other) : _List_iterator_base(other) {};
+				~_List_iterator() {};
+
+				self& operator= (const iterator& rhs) {
+					_List_iterator_base::operator=(rhs);
 					return (*this);
 				};
-				bool operator== (const const_iterator& other) const {
-					if (this->_cur == other._cur)
-						return (true);
-					return (false);
-				};
-				bool operator!= (const const_iterator& other) const {
-					if (this->_cur != other._cur)
-						return (true);
-					return (false);
-				};
-				const_iterator& operator++ () {
-					if (this->_next != NULL)
-					{
-						t_node *temp = this->_next;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+				self& operator++ () {
+					this->increment();
 					return (*this);
 				};
-				const_iterator& operator++ (int) {
-					if (this->_next != NULL)
-					{
-						t_node *temp = this->_next;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+				self& operator++ (int) {
+					this->increment();
 					return (*this);
 				};
-				const_iterator& operator-- () {
-					if (this->_prev != NULL)
-					{
-						t_node *temp = this->_prev;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+				self& operator-- () {
+					this->decrement();
 					return (*this);
 				};
-				const_iterator& operator-- (int) {
-					if (this->_prev != NULL)
-					{
-						t_node *temp = this->_prev;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+				self& operator-- (int) {
+					this->decrement();
 					return (*this);
+				};
+				bool operator== (const self& other) const {
+					return (_List_iterator_base::operator==(other));
+				};
+				bool operator!= (const self& other) const {
+					return (_List_iterator_base::operator!=(other));
 				};
 
 				reference operator*() const {
-					return (*_cur->data);
+					return (*this->getCurrent()->data);
 				};
+
 				pointer operator->() const {
-					return (_cur->data);
+					return (this->getCurrent()->data);
 				};
 		};
 
+		typedef _List_iterator<T, T&, T*>				iterator;
+		typedef _List_iterator<T, const T&, const T*>	const_iterator;
 		typedef ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
