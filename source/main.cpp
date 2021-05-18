@@ -8,39 +8,121 @@
 #include <queue>
 #include <iostream>
 
-// void test_listgroup_iterator()
-// {
-// 	std::cout << "list::iterator" << std::endl;
-// 	std::list<int>	original_list;
-// 	ft::List<int>	my_list;
-// 	std::list<int>::iterator original_it = original_list.begin();
-// 	ft::List<int>::iterator my_it = my_list.begin();
+void test_typetrairsgroup_isintegral()
+{
+	std::cout << "type_traits::is_integral" << std::endl;
+	ASSERT_EQ(ft::is_integral<int>::value, true);
+	ASSERT_EQ(ft::is_integral<ft::List<int>::iterator>::value, false);
+}
 
-// 	ASSERT_EQ(*original_it, *my_it);
-// 	++original_it;
-// 	++my_it;
-// 	*original_it;
-// 	*my_it;
+void test_listgroup_nconstructor()
+{
+	std::cout << "list::nconstructor" << std::endl;
+	std::list<int>	original_list(10, 42);
+	ft::List<int>	my_list(10, 42);
 
-// 	std::list<TestClass>	original_list_class;
-// 	ft::List<TestClass>		my_list_class;
+	std::list<int>::iterator original_it = original_list.begin();
+	ft::List<int>::iterator my_it = my_list.begin();
+	while (original_it != original_list.end() || my_it != my_list.end())
+	{
+		ASSERT_EQ(*original_it, *my_it);
+		++original_it;
+		++my_it;
+	}
+	ASSERT_EQ(original_it == original_list.end(), my_it == my_list.end());
 
-// 	std::list<TestClass>::iterator original_class_it = original_list_class.begin();
-// 	ft::List<TestClass>::iterator my_class_it = my_list_class.begin();
+	std::cout << std::endl;
+}
 
-// 	original_class_it->setA(1);
-// 	my_class_it->setA(1);
-// 	//std::cout << original_class_it->getA() << std::endl;
-// 	//std::cout << my_class_it->getA() << std::endl;
-// 	ASSERT_EQ(original_class_it->getA(), my_class_it->getA());
+void test_listgroup_iterconstructor()
+{
+	std::cout << "list::iterconstructor" << std::endl;
 
-// 	original_class_it->setB("test");
-// 	//my_class_it->setB("test");
-// 	//std::cout << my_class_it->getB() << std::endl;
-// 	//ASSERT_EQ(original_class_it->getB(), my_class_it->getB());
+	int array[] = {1, 2, 3, 4, 5};
 
-// 	std::cout << std::endl;
-// }
+	std::list<int>	original_list(array, array + sizeof(array) / sizeof(int));
+	ft::List<int>	my_list(array, array + sizeof(array) / sizeof(int));
+
+	std::list<int>::iterator original_it = original_list.begin();
+	ft::List<int>::iterator my_it = my_list.begin();
+	while (original_it != original_list.end() || my_it != my_list.end())
+	{
+		ASSERT_EQ(*original_it, *my_it);
+		++original_it;
+		++my_it;
+	}
+	ASSERT_EQ(original_it == original_list.end(), my_it == my_list.end());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_copyconstructor()
+{
+	std::cout << "list::copy_constructor" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	std::list<int> original_copy = std::list<int>(original_list);
+	ft::List<int> my_copy = ft::List<int>(my_list);
+
+	std::list<int>::iterator original_it = original_copy.begin();
+	ft::List<int>::iterator my_it = my_copy.begin();
+	while (original_it != original_copy.end() || my_it != my_copy.end())
+	{
+		ASSERT_EQ(*original_it, *my_it);
+		++original_it;
+		++my_it;
+	}
+	ASSERT_EQ(original_it == original_copy.end(), my_it == my_copy.end());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_assignmentoperator()
+{
+	std::cout << "list::assignment_operator" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	std::list<int> second_original_list;
+	ft::List<int> second_my_list;
+
+	second_my_list.push_back(4);
+	second_my_list.push_back(5);
+	second_my_list.push_back(6);
+	second_original_list.push_back(4);
+	second_original_list.push_back(5);
+	second_original_list.push_back(6);
+
+	second_original_list = original_list;
+	second_my_list = my_list;
+
+	std::list<int>::iterator original_it = second_original_list.begin();
+	ft::List<int>::iterator my_it = second_my_list.begin();
+	while (original_it != second_original_list.end() || my_it != second_my_list.end())
+	{
+		ASSERT_EQ(*original_it, *my_it);
+		++original_it;
+		++my_it;
+	}
+	ASSERT_EQ(original_it == second_original_list.end(), my_it == second_my_list.end());
+
+	std::cout << std::endl;
+}
 
 void test_listgroup_iterator()
 {
@@ -113,38 +195,11 @@ void test_listgroup_constiterator()
 
 	while (original_it != original_list.end() || my_it != my_list.end())
 	{
+		//(*original_it)++;					compilation error
+		//(*my_it)++;						compilation error
 		ASSERT_EQ(*original_it, *my_it);
 		original_it++;
 		my_it++;
-	}
-	ASSERT_EQ(original_it == original_list.end(), my_it == my_list.end());
-
-	std::cout << std::endl;
-}
-
-void test_listgroup_copyconstructor()
-{
-	std::cout << "list::copy_constructor" << std::endl;
-	std::list<int>	original_list;
-	ft::List<int>	my_list;
-
-	my_list.push_back(1);
-	my_list.push_back(2);
-	my_list.push_back(3);
-	original_list.push_back(1);
-	original_list.push_back(2);
-	original_list.push_back(3);
-
-	std::list<int> original_copy = std::list<int>(original_list);
-	ft::List<int> my_copy = ft::List<int>(my_list);
-
-	std::list<int>::iterator original_it = original_copy.begin();
-	ft::List<int>::iterator my_it = my_copy.begin();
-	while (original_it != original_copy.end() || my_it != my_copy.end())
-	{
-		ASSERT_EQ(*original_it, *my_it);
-		++original_it;
-		++my_it;
 	}
 	ASSERT_EQ(original_it == original_list.end(), my_it == my_list.end());
 
@@ -174,6 +229,126 @@ void test_listgroup_reverseiterator()
 		++my_rev_it;
 	}
 	ASSERT_EQ(original_rev_it == original_list.rend(), my_rev_it == my_list.rend());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_empty()
+{
+	std::cout << "list::empty" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	ASSERT_EQ(original_list.empty(), my_list.empty());
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+	ASSERT_EQ(original_list.empty(), my_list.empty());
+	my_list.pop_back();
+	my_list.pop_back();
+	my_list.pop_back();
+	original_list.pop_back();
+	original_list.pop_back();
+	original_list.pop_back();
+	ASSERT_EQ(original_list.empty(), my_list.empty());
+	std::cout << std::endl;
+}
+
+void test_listgroup_size()
+{
+	std::cout << "list::size" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	ASSERT_EQ(my_list.size(), original_list.size());
+	my_list.push_back(1);
+	original_list.push_back(1);
+	ASSERT_EQ(my_list.size(), original_list.size());
+	my_list.push_back(2);
+	original_list.push_back(2);
+	ASSERT_EQ(my_list.size(), original_list.size());
+	my_list.push_back(3);
+	original_list.push_back(3);
+	ASSERT_EQ(my_list.size(), original_list.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_front()
+{
+	std::cout << "list::front" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	ASSERT_EQ(my_list.front(), original_list.front());
+	my_list.pop_front();
+	original_list.pop_front();
+	ASSERT_EQ(my_list.front(), original_list.front());
+	my_list.pop_front();
+	original_list.pop_front();
+	ASSERT_EQ(my_list.front(), original_list.front());
+	my_list.pop_front();
+	original_list.pop_front();
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	const std::list<int>	const_original_list(original_list);
+	const ft::List<int>		const_my_list(my_list);
+
+	ASSERT_EQ(const_my_list.front(), const_original_list.front());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_back()
+{
+	std::cout << "list::back" << std::endl;
+	std::list<int>	original_list;
+	ft::List<int>	my_list;
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	ASSERT_EQ(my_list.back(), original_list.back());
+	my_list.pop_back();
+	original_list.pop_back();
+	ASSERT_EQ(my_list.back(), original_list.back());
+	my_list.pop_back();
+	original_list.pop_back();
+	ASSERT_EQ(my_list.back(), original_list.back());
+	my_list.pop_back();
+	original_list.pop_back();
+
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+
+	const std::list<int>	const_original_list(original_list);
+	const ft::List<int>		const_my_list(my_list);
+
+	ASSERT_EQ(const_my_list.back(), const_original_list.back());
 
 	std::cout << std::endl;
 }
@@ -300,61 +475,142 @@ void test_listgroup_popfront()
 	std::cout << std::endl;
 }
 
-void test_listgroup_empty()
+void test_listgroup_insert()
 {
-	std::cout << "list::empty" << std::endl;
+	std::cout << "list::insert" << std::endl;
+
 	std::list<int>	original_list;
 	ft::List<int>	my_list;
+	std::list<int>::iterator o_it;
+	ft::List<int>::iterator m_it;
 
-	ASSERT_EQ(original_list.empty(), my_list.empty());
-	my_list.push_back(1);
-	my_list.push_back(2);
-	my_list.push_back(3);
-	original_list.push_back(1);
-	original_list.push_back(2);
-	original_list.push_back(3);
-	ASSERT_EQ(original_list.empty(), my_list.empty());
-	my_list.pop_back();
-	my_list.pop_back();
-	my_list.pop_back();
-	original_list.pop_back();
-	original_list.pop_back();
-	original_list.pop_back();
-	ASSERT_EQ(original_list.empty(), my_list.empty());
-	std::cout << std::endl;
-}
+	o_it = original_list.insert(original_list.end(), 1);
+	m_it = my_list.insert(my_list.end(), 1);
+	ASSERT_EQ(*o_it, *m_it);
 
-void test_listgroup_size()
-{
-	std::cout << "list::size" << std::endl;
-	std::list<int>	original_list;
-	ft::List<int>	my_list;
+	o_it = original_list.insert(original_list.end(), 2);
+	m_it = my_list.insert(my_list.end(), 2);
+	ASSERT_EQ(*o_it, *m_it);
 
-	ASSERT_EQ(my_list.size(), original_list.size());
-	my_list.push_back(1);
-	original_list.push_back(1);
-	ASSERT_EQ(my_list.size(), original_list.size());
-	my_list.push_back(2);
-	original_list.push_back(2);
-	ASSERT_EQ(my_list.size(), original_list.size());
-	my_list.push_back(3);
-	original_list.push_back(3);
-	ASSERT_EQ(my_list.size(), original_list.size());
+	o_it = original_list.insert(original_list.end(), 3);
+	m_it = my_list.insert(my_list.end(), 3);
+	ASSERT_EQ(*o_it, *m_it);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_list.clear();
+	my_list.clear();
+
+	o_it = original_list.insert(original_list.begin(), 1);
+	m_it = my_list.insert(my_list.begin(), 1);
+	ASSERT_EQ(*o_it, *m_it);
+
+	o_it = original_list.insert(original_list.begin(), 2);
+	m_it = my_list.insert(my_list.begin(), 2);
+	ASSERT_EQ(*o_it, *m_it);
+
+	o_it = original_list.insert(original_list.begin(), 3);
+	m_it = my_list.insert(my_list.begin(), 3);
+	ASSERT_EQ(*o_it, *m_it);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	o_it++;
+	m_it++;
+
+	original_list.insert(o_it, 4);
+	my_list.insert(m_it, 4);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	o_it++;
+	m_it++;
+	o_it++;
+	m_it++;
+
+	original_list.insert(o_it, 3, 4);
+	my_list.insert(m_it, 3, 4);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	int n[] = {5, 6, 7, 8, 9};
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	++o_it;
+	++m_it;
+
+	original_list.insert(o_it, n, n + 3);
+	my_list.insert(m_it, n, n + 3);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
 
 	std::cout << std::endl;
 }
 
 int main()
 {
+	test_typetrairsgroup_isintegral();
+
+	test_listgroup_nconstructor();
+	test_listgroup_iterconstructor();
+	test_listgroup_copyconstructor();
+	test_listgroup_assignmentoperator();
+
 	test_listgroup_iterator();
 	test_listgroup_constiterator();
-	test_listgroup_copyconstructor();
 	test_listgroup_reverseiterator();
+
+	test_listgroup_empty();
+	test_listgroup_size();
+
+	test_listgroup_front();
+	test_listgroup_back();
+
 	test_listgroup_pushback();
 	test_listgroup_pushfront();
 	test_listgroup_popback();
 	test_listgroup_popfront();
-	test_listgroup_empty();
-	test_listgroup_size();
+	test_listgroup_insert();
+
 	return (0);
 }

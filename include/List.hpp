@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #ifndef LIST_HPP
-# define LIST_HPP
+#define LIST_HPP
 
-# include <limits>
-# include "iterator.hpp"
-# include "reverse_iterator.hpp"
+#include <limits>
+#include "iterator.hpp"
+#include "reverse_iterator.hpp"
+#include "type_traits.hpp"
 
 namespace ft
 {
@@ -28,7 +29,7 @@ namespace ft
 	template <typename T, typename Alloc = std::allocator<T> >
 	class List
 	{
-	private:
+	public:
 		typedef T								value_type;
 		typedef Alloc							allocator_type;
 		typedef T&								reference;
@@ -38,6 +39,15 @@ namespace ft
 		typedef typename Alloc::difference_type	difference_type;
 		typedef size_t							size_type;
 
+		template <typename Tp, typename Ref, typename Ptr>
+		class _List_iterator;
+
+		typedef _List_iterator<T, T&, T*>				iterator;
+		typedef _List_iterator<T, const T&, const T*>	const_iterator;
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
+	private:
 		allocator_type		_allocator;
 		size_type			_n;
 		typedef struct		s_node
@@ -67,8 +77,7 @@ namespace ft
 			return (node);
 		};
 
-		t_node *lastNode()
-		{
+		t_node *lastNode() {
 			return (this->_end->prev);
 		};
 
@@ -76,8 +85,7 @@ namespace ft
 		// CONSTRUCTORS
 		explicit List (const allocator_type& alloc = allocator_type())
 			:	_allocator(alloc),
-				_n(0),
-				_begin(NULL)
+				_n(0)
 		{
 			this->_end = createEnd();
 			_begin = this->_end;
@@ -86,36 +94,35 @@ namespace ft
 		explicit List (size_type n, const value_type& val = value_type(),
 			const allocator_type& alloc = allocator_type())
 			:	_allocator(alloc),
-				_n(0),
-				_begin(NULL)
+				_n(0)
 		{
 			this->_end = createEnd();
 			_begin = this->_end;
-			for (int i = 0; i < n; ++i)
-				push_back(val);
+			this->assign(n, val);
 		};
 
-		// template <class InputIterator>
-		// List (InputIterator first, InputIterator last,
-		// 	const allocator_type& alloc = allocator_type()){
-
-		// };
+		template <class InputIterator>
+		List (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
+			:	_allocator(alloc),
+				_n(0)
+		{
+			this->_end = createEnd();
+			_begin = this->_end;
+			this->assign(first, last);
+		};
 
 		List (const List& x)
 			:	_allocator(x._allocator),
-				_n(0),
-				_begin(NULL)
+				_n(0)
 		{
 			this->_end = createEnd();
 			_begin = this->_end;
-			const_iterator it = x.begin();
-			for (; it != x.end(); ++it)
-				this->push_back(*it);
+			this->assign(x.begin(), x.end());
 		};
 
 		//DESTRUCTOR
-		~List()
-		{
+		~List() {
 			while (_begin != _end)
 			{
 				t_node *temp = _begin->next;
@@ -127,29 +134,120 @@ namespace ft
 			delete _end->data;
 			delete _end;
 		};
-		//Operator
-		List& operator= (const List& x);
+
+		//Operator =
+		List& operator= (const List& x){
+			if (this == &x)
+				return (*this);
+			this->_allocator = x._allocator;
+			this->_begin = this->_end;
+			this->assign(x.begin(), x.end());
+			return (*this);
+		};
+
+		// Iterators
+		iterator begin() {
+			if (_n != 0)
+			{
+				iterator it(this->_begin);
+				return (it);
+			}
+			iterator it(_end);
+			return (it);
+		};
+
+		const_iterator begin() const{
+			if (_n != 0)
+			{
+				const_iterator it(this->_begin);
+				return (it);
+			}
+			const_iterator it(_end);
+			return (it);
+		};
+
+		iterator end() {
+			iterator it(_end);
+			return (it);
+		};
+
+		const_iterator end() const{
+			const_iterator it(_end);
+			return (it);
+		};
+
+		reverse_iterator rbegin() {
+			reverse_iterator rev_it(_end);
+			return (rev_it);
+		};
+
+		const_reverse_iterator rbegin() const{
+			reverse_iterator rev_it(_end);
+			return (rev_it);
+		};
+
+		reverse_iterator rend() {
+			reverse_iterator rev_it(_begin);
+			return (rev_it);
+		};
+
+		const_reverse_iterator rend() const{
+			reverse_iterator rev_it(_begin);
+			return (rev_it);
+		};
+
 		// Capacity
 		bool empty() const {
 			if (_n == 0)
 				return (true);
 			return (false);
 		};
+
 		size_type size() const {
 			return (_n);
 		};
+
 		size_type max_size() const {
 			return (std::numeric_limits<size_type>::max());
-		}
+		};
+
 		// Element access
-		reference front();
-		const_reference front() const;
-		reference back();
-		const_reference back() const;
+		reference front() {
+			return (*(this->begin()));
+		};
+
+		const_reference front() const {
+			return (*(this->begin()));
+		};
+
+		reference back() {
+			iterator it = this->end();
+			--it;
+			return (*it);
+		}
+
+		const_reference back() const {
+			const_iterator it = this->end();
+			--it;
+			return (*it);
+		}
+
 		// Modifiers
-		// template <class InputIterator>
-		// 	void assign (InputIterator first, InputIterator last);
-		void assign (size_type n, const value_type& val);
+		template <class InputIterator>
+			void assign (InputIterator first, InputIterator last,
+			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
+		{
+			this->clear();
+			for (; first != last; ++first)
+				push_back(*first);
+		}
+
+		void assign (size_type n, const value_type& val) {
+			this->clear();
+			for (size_type i = 0; i < n; ++i)
+				push_back(val);
+		};
+
 		void push_front (const value_type& val) {
 			if (_n < max_size())
 			{
@@ -160,6 +258,7 @@ namespace ft
 				++_n;
 			}
 		};
+
 		void pop_front() {
 			if (_n != 0)
 			{
@@ -172,6 +271,7 @@ namespace ft
 				--_n;
 			}
 		};
+
 		void push_back (const value_type& val) {
 			if (_n < max_size())
 			{
@@ -189,6 +289,7 @@ namespace ft
 				++_n;
 			}
 		};
+
 		void pop_back() {
 			if (_n != 0)
 			{
@@ -204,15 +305,58 @@ namespace ft
 				--_n;
 			}
 		};
-		//iterator insert (iterator position, const value_type& val);
-		//void insert (iterator position, size_type n, const value_type& val);
-		// template <class InputIterator>
-		// 	void insert (iterator position, InputIterator first, InputIterator last);
-		//iterator erase (iterator position);
-		//iterator erase (iterator first, iterator last);
+
+		iterator insert (iterator position, const value_type& val){
+			t_node		*new_node = createNode(val);
+			t_node		*prev = position.getPrev();
+			t_node		*next = position.getCurrent();
+			iterator	result;
+
+			new_node->next = next;
+			if (new_node->next)
+				new_node->next->prev = new_node;
+			new_node->prev = prev;
+			if (new_node->prev)
+				new_node->prev->next = new_node;
+			_n++;
+			result.setCurrent(new_node);
+			result.setPrev(new_node->prev);
+			result.setNext(new_node->next);
+			if (!new_node->prev)
+				_begin = new_node;
+			return (result);
+		};
+
+		void insert (iterator position, size_type n, const value_type& val)
+		{
+			for (size_type i = 0; i < n; ++i)
+				position = this->insert(position, val);
+		};
+
+		template <class InputIterator>
+			void insert (iterator position, InputIterator first, InputIterator last,
+			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
+		{
+			--last;
+			for (; last != first; --last)
+				position = this->insert(position, *last);
+			position = this->insert(position, *last);
+		};
+
+		iterator erase (iterator position) {
+
+		};
+
+		iterator erase (iterator first, iterator last);
 		void swap (List& x);
 		void resize (size_type n, value_type val = value_type());
-		void clear();
+
+		void clear() {
+			while (_n != 0)
+				this->pop_back();
+			_end->next = NULL;
+			_end->prev = NULL;
+		}
 		// Operations
 		//void splice (iterator position, List& x);
 		//void splice (iterator position, List& x, iterator i);
@@ -249,9 +393,12 @@ namespace ft
 					return (*this);
 				};
 
-				t_node *getCurrent() const{
-					return (_cur);
-				};
+				t_node	*getCurrent() const {return (_cur);};
+				t_node	*getPrev() const {return (_prev);};
+				t_node	*getNext() const {return (_next);};
+				void	setCurrent(t_node *cur) {_cur = cur;};
+				void	setPrev(t_node *prev) {_prev = prev;};
+				void	setNext(t_node *next) {_next = next;};
 
 				bool operator== (const _List_iterator_base& other) const {return (this->_cur == other._cur);};
 				bool operator!= (const _List_iterator_base& other) const {return (this->_cur != other._cur);};
@@ -331,62 +478,6 @@ namespace ft
 				pointer operator->() const {
 					return (this->getCurrent()->data);
 				};
-		};
-
-		typedef _List_iterator<T, T&, T*>				iterator;
-		typedef _List_iterator<T, const T&, const T*>	const_iterator;
-		typedef ft::reverse_iterator<iterator>			reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-
-		// Iterators
-		iterator begin() {
-			if (_n != 0)
-			{
-				iterator it(this->_begin);
-				return (it);
-			}
-			iterator it(_end);
-			return (it);
-		};
-
-		const_iterator begin() const{
-			if (_n != 0)
-			{
-				const_iterator it(this->_begin);
-				return (it);
-			}
-			const_iterator it(_end);
-			return (it);
-		};
-
-		iterator end() {
-			iterator it(_end);
-			return (it);
-		};
-
-		const_iterator end() const{
-			const_iterator it(_end);
-			return (it);
-		};
-
-		reverse_iterator rbegin() {
-			reverse_iterator rev_it(_end);
-			return (rev_it);
-		};
-
-		const_reverse_iterator rbegin() const{
-			reverse_iterator rev_it(_end);
-			return (rev_it);
-		};
-
-		reverse_iterator rend() {
-			reverse_iterator rev_it(_begin);
-			return (rev_it);
-		};
-
-		const_reverse_iterator rend() const{
-			reverse_iterator rev_it(_begin);
-			return (rev_it);
 		};
 	};
 
