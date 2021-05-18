@@ -479,10 +479,10 @@ void test_listgroup_insert()
 {
 	std::cout << "list::insert" << std::endl;
 
-	std::list<int>	original_list;
-	ft::List<int>	my_list;
-	std::list<int>::iterator o_it;
-	ft::List<int>::iterator m_it;
+	std::list<int>				original_list;
+	ft::List<int>				my_list;
+	std::list<int>::iterator	o_it;
+	ft::List<int>::iterator		m_it;
 
 	o_it = original_list.insert(original_list.end(), 1);
 	m_it = my_list.insert(my_list.end(), 1);
@@ -587,6 +587,155 @@ void test_listgroup_insert()
 	std::cout << std::endl;
 }
 
+void test_listgroup_erase()
+{
+	std::cout << "list::insert" << std::endl;
+
+	std::list<int>				original_list;
+	ft::List<int>				my_list;
+	std::list<int>::iterator	o_it;
+	ft::List<int>::iterator		m_it;
+
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+
+	o_it = original_list.begin();
+	++o_it;
+	m_it = my_list.begin();
+	++m_it;
+
+	original_list.erase(o_it);
+	my_list.erase(m_it);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_list.erase(original_list.begin());
+	my_list.erase(my_list.begin());
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_list.erase(original_list.begin());
+	my_list.erase(my_list.begin());
+
+	ASSERT_EQ(original_list.size(), my_list.size());
+	ASSERT_TRUE(original_list.size() == 0);
+
+	original_list.push_back(1);
+	original_list.push_back(2);
+	original_list.push_back(3);
+	original_list.push_back(4);
+	my_list.push_back(1);
+	my_list.push_back(2);
+	my_list.push_back(3);
+	my_list.push_back(4);
+
+	original_list.erase(++original_list.begin(), --original_list.end());
+	my_list.erase(++my_list.begin(), --my_list.end());
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_list.erase(original_list.begin(), original_list.end());
+	my_list.erase(my_list.begin(), my_list.end());
+
+	ASSERT_EQ(original_list.size(), my_list.size());
+	ASSERT_TRUE(original_list.size() == 0);
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_swap()
+{
+	std::cout << "list::swap" << std::endl;
+
+	std::list<int> original_first (3,100);
+	std::list<int> original_second (5,200);
+	ft::List<int> my_first (3, 100);
+	ft::List<int> my_second (5, 200);
+
+	original_first.swap(original_second);
+	my_first.swap(my_second);
+
+	std::list<int>::iterator o_it = original_first.begin();
+	ft::List<int>::iterator m_it = my_first.begin();
+	while (o_it != original_first.end() || m_it != my_first.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	o_it = original_second.begin();
+	m_it = my_second.begin();
+	while (o_it != original_second.end() || m_it != my_second.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_resize()
+{
+	std::cout << "list::resize" << std::endl;
+
+	int n[] = {1, 2, 3};
+	std::list<int> original_list(n, n + 3);
+	ft::List<int> my_list(n, n + 3);
+
+	original_list.resize(5);
+	my_list.resize(5);
+
+	std::list<int>::iterator o_it = original_list.begin();
+	ft::List<int>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_list.resize(2);
+	my_list.resize(2);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	std::cout << std::endl;
+}
+
 int main()
 {
 	test_typetrairsgroup_isintegral();
@@ -611,6 +760,9 @@ int main()
 	test_listgroup_popback();
 	test_listgroup_popfront();
 	test_listgroup_insert();
+	test_listgroup_erase();
+	test_listgroup_swap();
+	test_listgroup_resize();
 
 	return (0);
 }

@@ -30,14 +30,14 @@ namespace ft
 	class List
 	{
 	public:
-		typedef T								value_type;
-		typedef Alloc							allocator_type;
-		typedef T&								reference;
-		typedef const T&						const_reference;
-		typedef T*								pointer;
-		typedef const T*						const_pointer;
-		typedef typename Alloc::difference_type	difference_type;
-		typedef size_t							size_type;
+		typedef T										value_type;
+		typedef Alloc									allocator_type;
+		typedef T&										reference;
+		typedef const T&								const_reference;
+		typedef T*										pointer;
+		typedef const T*								const_pointer;
+		typedef typename Alloc::difference_type			difference_type;
+		typedef size_t									size_type;
 
 		template <typename Tp, typename Ref, typename Ptr>
 		class _List_iterator;
@@ -344,19 +344,63 @@ namespace ft
 		};
 
 		iterator erase (iterator position) {
+			t_node *next = position.getNext();
+			t_node *prev = position.getPrev();
+			iterator result;
 
+			if (_n == 0 || position.getCurrent() == _end)
+			{
+				result.setCurrent(_end);
+				result.setPrev(NULL);
+				result.setNext(NULL);
+				return (result);
+			}
+			if (position.getCurrent() == _begin)
+				_begin = position.getNext();
+			delete position.getCurrent();
+			if (next)
+				next->prev = prev;
+			if (prev)
+				prev->next = next;
+			result.setCurrent(next);
+			result.setPrev(next->prev);
+			result.setNext(next->next);
+			--this->_n;
+			return (result);
 		};
 
-		iterator erase (iterator first, iterator last);
-		void swap (List& x);
-		void resize (size_type n, value_type val = value_type());
+		iterator erase (iterator first, iterator last) {
+			while (first != last)
+				first = this->erase(first);
+			return (last);
+		};
+
+		void swap (List& x) {
+			t_node *temp_begin = this->_begin;
+			t_node *temp_end = this->_end;
+			size_type temp_n = this->_n;
+			this->_begin = x._begin;
+			this->_end = x._end;
+			this->_n = x._n;
+			x._begin = temp_begin;
+			x._end = temp_end;
+			x._n = temp_n;
+		};
+
+		void resize (size_type n, value_type val = value_type()) {
+			while (_n > n)
+				this->pop_back();
+			while (_n < n)
+				this->push_back(val);
+		};
 
 		void clear() {
 			while (_n != 0)
 				this->pop_back();
 			_end->next = NULL;
 			_end->prev = NULL;
-		}
+		};
+
 		// Operations
 		//void splice (iterator position, List& x);
 		//void splice (iterator position, List& x, iterator i);
