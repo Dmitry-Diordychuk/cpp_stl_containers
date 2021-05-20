@@ -775,7 +775,6 @@ void test_listgroup_splice()
 	ft::List<int>::iterator mp_it = my_list1.begin();
 	while (op_it != original_list1.end() || mp_it != my_list1.end())
 	{
-		std::cout << *op_it << " ?= " << *mp_it << std::endl;
 		ASSERT_EQ(*op_it, *mp_it);
 		++op_it;
 		++mp_it;
@@ -789,12 +788,37 @@ void test_listgroup_splice()
 	mp_it = my_list1.begin();
 	while (op_it != original_list1.end() || mp_it != my_list1.end())
 	{
-		std::cout << *op_it << " ?= " << *mp_it << std::endl;
 		ASSERT_EQ(*op_it, *mp_it);
 		++op_it;
 		++mp_it;
 	}
-	ASSERT_EQ(original_list2.empty(), my_list2.empty());
+	op_it = original_list2.begin();
+	mp_it = my_list2.begin();
+	while (op_it != original_list2.end() || mp_it != my_list2.end())
+	{
+		ASSERT_EQ(*op_it, *mp_it);
+		++op_it;
+		++mp_it;
+	}
+
+	o_it = original_list1.begin();
+	std::advance(o_it, 3);
+	m_it = my_list1.begin();
+	m_it++;
+	m_it++;
+	m_it++;
+
+	original_list1.splice(original_list1.begin(), original_list1, o_it, original_list1.end());
+	my_list1.splice(my_list1.begin(), my_list1, m_it, my_list1.end());
+
+	op_it = original_list1.begin();
+	mp_it = my_list1.begin();
+	while (op_it != original_list1.end() || mp_it != my_list1.end())
+	{
+		ASSERT_EQ(*op_it, *mp_it);
+		++op_it;
+		++mp_it;
+	}
 
 	std::cout << std::endl;
 }

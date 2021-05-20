@@ -315,7 +315,7 @@ namespace ft
 
 		iterator insert (iterator position, const value_type& val) {
 			t_node		*new_node = createNode(val);
-			t_node		*prev = position.getPrev();
+			t_node		*prev = position.getCurrent()->prev;
 			t_node		*next = position.getCurrent();
 			iterator	result;
 
@@ -327,8 +327,6 @@ namespace ft
 				new_node->prev->next = new_node;
 			_n++;
 			result.setCurrent(new_node);
-			result.setPrev(new_node->prev);
-			result.setNext(new_node->next);
 			if (!new_node->prev)
 				_begin = new_node;
 			return (result);
@@ -351,27 +349,23 @@ namespace ft
 		};
 
 		iterator erase (iterator position) {
-			t_node *next = position.getNext();
-			t_node *prev = position.getPrev();
+			t_node *next = position.getCurrent()->next;
+			t_node *prev = position.getCurrent()->prev;
 			iterator result;
 
 			if (_n == 0 || position.getCurrent() == _end)
 			{
 				result.setCurrent(_end);
-				result.setPrev(NULL);
-				result.setNext(NULL);
 				return (result);
 			}
 			if (position.getCurrent() == _begin)
-				_begin = position.getNext();
+				_begin = position.getCurrent()->next;
 			deleteNode(position.getCurrent());
 			if (next)
 				next->prev = prev;
 			if (prev)
 				prev->next = next;
 			result.setCurrent(next);
-			result.setPrev(next->prev);
-			result.setNext(next->next);
 			--this->_n;
 			return (result);
 		};
@@ -420,7 +414,7 @@ namespace ft
 		};
 
 		void splice (iterator position, List& x, iterator first, iterator last) {
-			t_node *pos = position.getPrev();
+			t_node *pos =   position.getCurrent()->prev;
 			t_node *next = position.getCurrent();
 			iterator it = first;
 			size_type counter = 0;
@@ -433,27 +427,19 @@ namespace ft
 			}
 			if (x._n == 0)
 				return ;
+			t_node* temp = first.getCurrent()->prev;
 			first.getCurrent()->prev = pos;
 			if (pos)
 				pos->next = first.getCurrent();
 			else
 				this->_begin = first.getCurrent();
-			last.getPrev()->next = next;
-			next->prev = last.getPrev();
-			if (first.getPrev())
-			{
-				last.getCurrent()->prev = first.getPrev();
-				first.getPrev()->next = last.getCurrent();
-				this->_n += counter;
-				x._n -= counter;
-			}
-			else
-			{
-				last.getCurrent()->prev = NULL;
-				this->_n += x._n;
-				x._n = 0;
-			}
-			x._begin = last.getCurrent();
+			last.getCurrent()->prev->next = next;
+			next->prev = last.getCurrent()->prev;
+			last.getCurrent()->prev = temp;
+			if (temp)
+				temp->next = last.getCurrent();
+			this->_n += counter;
+			x._n -= counter;
 		};
 
 		// void remove (const value_type& val) {
@@ -499,50 +485,32 @@ namespace ft
 		class _List_iterator_base
 		{
 			private:
-				t_node *_next;
-				t_node *_prev;
 				t_node *_cur;
 			public:
 				_List_iterator_base() {};
-				_List_iterator_base(t_node *node) : _next(node->next), _prev(node->prev), _cur(node) {};
-				_List_iterator_base(const _List_iterator_base& x) : _next(x._next), _prev(x._prev), _cur(x._cur) {};
+				_List_iterator_base(t_node *node) : _cur(node) {};
+				_List_iterator_base(const _List_iterator_base& x) : _cur(x._cur) {};
 				~_List_iterator_base() {};
 				_List_iterator_base& operator=(const _List_iterator_base& rhs){
-					this->_next = rhs._next;
-					this->_prev = rhs._prev;
 					this->_cur = rhs._cur;
 					return (*this);
 				};
 
 				t_node	*getCurrent() const {return (_cur);};
-				t_node	*getPrev() const {return (_prev);};
-				t_node	*getNext() const {return (_next);};
 				void	setCurrent(t_node *cur) {_cur = cur;};
-				void	setPrev(t_node *prev) {_prev = prev;};
-				void	setNext(t_node *next) {_next = next;};
 
 				bool operator== (const _List_iterator_base& other) const {return (this->_cur == other._cur);};
 				bool operator!= (const _List_iterator_base& other) const {return (this->_cur != other._cur);};
 
 				_List_iterator_base& increment () {
-					if (this->_next != NULL)
-					{
-						t_node *temp = this->_next;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+					if (_cur->next != NULL)
+						_cur = _cur->next;
 					return (*this);
 				};
 
 				_List_iterator_base& decrement () {
-					if (this->_prev != NULL)
-					{
-						t_node *temp = this->_prev;
-						this->_next = temp->next;
-						this->_prev = temp->prev;
-						this->_cur = temp;
-					}
+					if (_cur->prev != NULL)
+						_cur = _cur->prev;
 					return (*this);
 				};
 		};
