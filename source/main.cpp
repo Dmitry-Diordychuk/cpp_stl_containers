@@ -589,7 +589,7 @@ void test_listgroup_insert()
 
 void test_listgroup_erase()
 {
-	std::cout << "list::insert" << std::endl;
+	std::cout << "list::erase" << std::endl;
 
 	std::list<int>				original_list;
 	ft::List<int>				my_list;
@@ -736,6 +736,69 @@ void test_listgroup_resize()
 	std::cout << std::endl;
 }
 
+void test_listgroup_splice()
+{
+	std::cout << "list::splice" << std::endl;
+
+	std::list<int>				original_list1;
+	std::list<int>				original_list2;
+	ft::List<int>				my_list1;
+	ft::List<int>				my_list2;
+	std::list<int>::iterator	o_it;
+	ft::List<int>::iterator		m_it;
+
+	for (int i = 1; i <= 4; ++i)
+		original_list1.push_back(i);
+	for (int i = 1; i <= 4; ++i)
+		my_list1.push_back(i);
+
+	for (int i = 1; i <= 3; ++i)
+		original_list2.push_back(i * 10);
+	for (int i = 1; i <= 3; ++i)
+		my_list2.push_back(i * 10);
+
+	o_it = original_list1.begin();
+	++o_it;
+	//++o_it;
+	//++o_it;
+	//++o_it;
+	m_it = my_list1.begin();
+	++m_it;
+	//++m_it;
+	//++m_it;
+	//++m_it;
+
+	original_list1.splice (o_it, original_list2);
+	my_list1.splice (m_it, my_list2);
+
+	std::list<int>::iterator op_it = original_list1.begin();
+	ft::List<int>::iterator mp_it = my_list1.begin();
+	while (op_it != original_list1.end() || mp_it != my_list1.end())
+	{
+		std::cout << *op_it << " ?= " << *mp_it << std::endl;
+		ASSERT_EQ(*op_it, *mp_it);
+		++op_it;
+		++mp_it;
+	}
+	ASSERT_EQ(original_list2.empty(), my_list2.empty());
+
+	original_list2.splice(original_list2.begin(), original_list1, o_it);
+	my_list2.splice(my_list2.begin(), my_list1, m_it);
+
+	op_it = original_list1.begin();
+	mp_it = my_list1.begin();
+	while (op_it != original_list1.end() || mp_it != my_list1.end())
+	{
+		std::cout << *op_it << " ?= " << *mp_it << std::endl;
+		ASSERT_EQ(*op_it, *mp_it);
+		++op_it;
+		++mp_it;
+	}
+	ASSERT_EQ(original_list2.empty(), my_list2.empty());
+
+	std::cout << std::endl;
+}
+
 int main()
 {
 	test_typetrairsgroup_isintegral();
@@ -763,6 +826,7 @@ int main()
 	test_listgroup_erase();
 	test_listgroup_swap();
 	test_listgroup_resize();
+	test_listgroup_splice();
 
 	return (0);
 }

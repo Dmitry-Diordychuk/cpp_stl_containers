@@ -69,6 +69,13 @@ namespace ft
 			return (node);
 		};
 
+		void deleteNode(t_node *node)
+		{
+			_allocator.destroy(node->data);
+			_allocator.deallocate(node->data, -1);
+			delete node;
+		}
+
 		t_node *createEnd() {
 			t_node *node = new t_node();
 			node->data = new T();
@@ -136,7 +143,7 @@ namespace ft
 		};
 
 		//Operator =
-		List& operator= (const List& x){
+		List& operator= (const List& x) {
 			if (this == &x)
 				return (*this);
 			this->_allocator = x._allocator;
@@ -156,7 +163,7 @@ namespace ft
 			return (it);
 		};
 
-		const_iterator begin() const{
+		const_iterator begin() const {
 			if (_n != 0)
 			{
 				const_iterator it(this->_begin);
@@ -171,7 +178,7 @@ namespace ft
 			return (it);
 		};
 
-		const_iterator end() const{
+		const_iterator end() const {
 			const_iterator it(_end);
 			return (it);
 		};
@@ -181,7 +188,7 @@ namespace ft
 			return (rev_it);
 		};
 
-		const_reverse_iterator rbegin() const{
+		const_reverse_iterator rbegin() const {
 			reverse_iterator rev_it(_end);
 			return (rev_it);
 		};
@@ -191,7 +198,7 @@ namespace ft
 			return (rev_it);
 		};
 
-		const_reverse_iterator rend() const{
+		const_reverse_iterator rend() const {
 			reverse_iterator rev_it(_begin);
 			return (rev_it);
 		};
@@ -234,7 +241,7 @@ namespace ft
 
 		// Modifiers
 		template <class InputIterator>
-			void assign (InputIterator first, InputIterator last,
+		void assign (InputIterator first, InputIterator last,
 			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
 		{
 			this->clear();
@@ -306,7 +313,7 @@ namespace ft
 			}
 		};
 
-		iterator insert (iterator position, const value_type& val){
+		iterator insert (iterator position, const value_type& val) {
 			t_node		*new_node = createNode(val);
 			t_node		*prev = position.getPrev();
 			t_node		*next = position.getCurrent();
@@ -334,7 +341,7 @@ namespace ft
 		};
 
 		template <class InputIterator>
-			void insert (iterator position, InputIterator first, InputIterator last,
+		void insert (iterator position, InputIterator first, InputIterator last,
 			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
 		{
 			--last;
@@ -357,7 +364,7 @@ namespace ft
 			}
 			if (position.getCurrent() == _begin)
 				_begin = position.getNext();
-			delete position.getCurrent();
+			deleteNode(position.getCurrent());
 			if (next)
 				next->prev = prev;
 			if (prev)
@@ -402,22 +409,92 @@ namespace ft
 		};
 
 		// Operations
-		//void splice (iterator position, List& x);
-		//void splice (iterator position, List& x, iterator i);
-		//void splice (iterator position, List& x, iterator first, iterator last);
-		void remove (const value_type& val);
-		template <class Predicate>
-			void remove_if (Predicate pred);
-		void unique();
-		template <class BinaryPredicate>
-			void unique (BinaryPredicate binary_pred);
-		void merge (List& x);
-		template <class Compare>
-			void merge (List& x, Compare comp);
-		void sort();
-		template <class Compare>
-			void sort (Compare comp);
-		void reverse();
+		void splice (iterator position, List& x) {
+			splice(position, x, x.begin(), x.end());
+		};
+
+		void splice (iterator position, List& x, iterator i) {
+			iterator first = i;
+			i++;
+			splice(position, x, first, i);
+		};
+
+		void splice (iterator position, List& x, iterator first, iterator last) {
+			t_node *pos = position.getPrev();
+			t_node *next = position.getCurrent();
+			iterator it = first;
+			size_type counter = 0;
+
+			counter = 0;
+			while (it != last)
+			{
+				counter++;
+				++it;
+			}
+			if (x._n == 0)
+				return ;
+			first.getCurrent()->prev = pos;
+			if (pos)
+				pos->next = first.getCurrent();
+			else
+				this->_begin = first.getCurrent();
+			last.getPrev()->next = next;
+			next->prev = last.getPrev();
+			if (first.getPrev())
+			{
+				last.getCurrent()->prev = first.getPrev();
+				first.getPrev()->next = last.getCurrent();
+				this->_n += counter;
+				x._n -= counter;
+			}
+			else
+			{
+				last.getCurrent()->prev = NULL;
+				this->_n += x._n;
+				x._n = 0;
+			}
+			x._begin = last.getCurrent();
+		};
+
+		// void remove (const value_type& val) {
+
+		// };
+
+		// template <class Predicate>
+		// void remove_if (Predicate pred) {
+
+		// };
+
+		// void unique() {
+
+		// };
+
+		// template <class BinaryPredicate>
+		// void unique (BinaryPredicate binary_pred) {
+
+		// };
+
+		// void merge (List& x) {
+
+		// };
+
+		// template <class Compare>
+		// void merge (List& x, Compare comp) {
+
+		// };
+
+		// void sort() {
+
+		// };
+
+		// template <class Compare>
+		// void sort (Compare comp) {
+
+		// };
+
+		// void reverse() {
+
+		// };
 
 		class _List_iterator_base
 		{
