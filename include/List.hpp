@@ -88,6 +88,121 @@ namespace ft
 			return (this->_end->prev);
 		};
 
+		void insertNode(t_node *new_node, t_node *prev, t_node *next) {
+			new_node->next = next;
+			if (new_node->next)
+				new_node->next->prev = new_node;
+			new_node->prev = prev;
+			if (new_node->prev)
+				new_node->prev->next = new_node;
+			_n++;
+			if (!new_node->prev)
+				_begin = new_node;
+		}
+
+		void unlinkNode(t_node *node)
+		{
+			if (node->next)
+				node->next->prev = NULL;
+			node->next = NULL;
+			if (node->prev)
+				node->prev->next = NULL;
+			node->prev = NULL;
+		}
+
+		t_node* merge(t_node* left, size_type leftN,t_node* right, size_type rightN, bool (*comp)(T a, T b))
+		{
+			t_node* result = NULL;
+			size_type totalLen = leftN + rightN;
+			size_type resultN = 0;
+
+			if (leftN == 0)
+				return (left);
+			if (rightN == 0)
+				return (right);
+			while (resultN < totalLen)
+			{
+				t_node* temp;
+				if ((left && !right) || (left && right && comp(*left->data, *right->data)))
+				{
+					temp = left->next;
+					unlinkNode(left);
+					if (result)
+					{
+						result->next = left;
+						left->prev = result;
+						result = result->next;
+					}
+					else
+						result = left;
+					left = temp;
+				}
+				else
+				{
+					temp = right->next;
+					unlinkNode(right);
+					if (result)
+					{
+						result->next = right;
+						right->prev = result;
+						result = result->next;
+					}
+					else
+						result = right;
+					right = temp;
+				}
+				++resultN;
+			}
+			while (result->prev != NULL)
+				result = result->prev;
+			return (result);
+		}
+
+		t_node* splitList(t_node* list, size_type middle)
+		{
+			t_node* temp = list;
+			size_type i = 1;
+			while (i < middle){
+				temp = temp->next;
+				++i;
+			}
+			if (temp->next)
+				temp->next->prev = NULL;
+			t_node *right = temp->next;
+			temp->next = NULL;
+			return (right);
+		}
+
+		static bool defaultComp(value_type first, value_type second)
+		{
+			return (first < second);
+		}
+
+		t_node* mergeSort(t_node* list, size_type n, bool (*comp)(value_type a, value_type b) = List::defaultComp)
+		{
+			if (n < 2)
+				return (list);
+
+			size_type middle;
+			size_type reminder;
+			if (list)
+			{
+				middle = n / 2;
+				reminder = n % 2;
+			}
+			else
+			{
+				middle = 0;
+				reminder = 0;
+			}
+
+			t_node* right = splitList(list, middle);
+			t_node* left = mergeSort(list, middle, comp);
+			right = mergeSort(right, middle + reminder, comp);
+
+			return (merge(left, left ? middle : 0, right, right ? middle + reminder : 0, comp));
+		}
+
 	public:
 		// CONSTRUCTORS
 		explicit List (const allocator_type& alloc = allocator_type())
@@ -315,20 +430,10 @@ namespace ft
 
 		iterator insert (iterator position, const value_type& val) {
 			t_node		*new_node = createNode(val);
-			t_node		*prev = position.getCurrent()->prev;
-			t_node		*next = position.getCurrent();
 			iterator	result;
 
-			new_node->next = next;
-			if (new_node->next)
-				new_node->next->prev = new_node;
-			new_node->prev = prev;
-			if (new_node->prev)
-				new_node->prev->next = new_node;
-			_n++;
+			insertNode(new_node, position.getCurrent()->prev, position.getCurrent());
 			result.setCurrent(new_node);
-			if (!new_node->prev)
-				_begin = new_node;
 			return (result);
 		};
 
@@ -442,45 +547,173 @@ namespace ft
 			x._n -= counter;
 		};
 
-		// void remove (const value_type& val) {
+		void remove (const value_type& val) {
+			t_node* node = _begin;
+			while (node != _end)
+			{
+				if (*node->data == val)
+				{
+					t_node* temp = node->next;
+					if (node->prev)
+						node->prev->next = node->next;
+					else
+						_begin = node->next;
+					node->next->prev = node->prev;
+					deleteNode(node);
+					--_n;
+					node = temp;
+				}
+				else
+					node = node->next;
+			}
+		};
 
-		// };
+		template <class Predicate>
+		void remove_if (Predicate pred) {
+			t_node* node = _begin;
+			while (node != _end)
+			{
+				if (pred(*node->data))
+				{
+					t_node* temp = node->next;
+					if (node->prev)
+						node->prev->next = node->next;
+					else
+						_begin = node->next;
+					node->next->prev = node->prev;
+					deleteNode(node);
+					--_n;
+					node = temp;
+				}
+				else
+					node = node->next;
+			}
+		};
 
-		// template <class Predicate>
-		// void remove_if (Predicate pred) {
+		void unique() {
+			t_node* node = _begin->next;
+			while (node != _end)
+			{
+				if (*node->data == *node->prev->data)
+				{
+					t_node* temp = node->next;
+					if (node->prev)
+						node->prev->next = node->next;
+					else
+						_begin = node->next;
+					node->next->prev = node->prev;
+					deleteNode(node);
+					--_n;
+					node = temp;
+				}
+				else
+					node = node->next;
+			}
+		};
 
-		// };
+		template <class BinaryPredicate>
+		void unique (BinaryPredicate binary_pred) {
+			t_node* node = _begin->next;
+			while (node != _end)
+			{
+				if (binary_pred(*node->data, *node->prev->data))
+				{
+					t_node* temp = node->next;
+					if (node->prev)
+						node->prev->next = node->next;
+					else
+						_begin = node->next;
+					node->next->prev = node->prev;
+					deleteNode(node);
+					--_n;
+					node = temp;
+				}
+				else
+					node = node->next;
+			}
+		};
 
-		// void unique() {
+		void merge (List& x) {
+			t_node* rhs = x._begin;
+			t_node* lhs = _begin;
+			while (rhs != x._end)
+			{
+				if (*rhs->data < *lhs->data || lhs == _end)
+				{
+					t_node* temp = rhs->next;
+					insertNode(rhs, lhs->prev, lhs);
+					rhs = temp;
+				}
+				else
+					lhs = lhs->next;
+			}
+			x._begin = x._end;
+			x._end->prev = NULL;
+			x._n = 0;
+		};
 
-		// };
+		template <class Compare>
+		void merge (List& x, Compare comp) {
+			t_node* rhs = x._begin;
+			t_node* lhs = _begin;
+			while (rhs != x._end)
+			{
+				if (comp(*rhs->data, *lhs->data) || lhs == _end)
+				{
+					t_node* temp = rhs->next;
+					insertNode(rhs, lhs->prev, lhs);
+					rhs = temp;
+				}
+				else
+					lhs = lhs->next;
+			}
+			x._begin = x._end;
+			x._end->prev = NULL;
+			x._n = 0;
+		};
 
-		// template <class BinaryPredicate>
-		// void unique (BinaryPredicate binary_pred) {
+		void sort() {
+			_end->prev->next = NULL;
+			t_node* result = mergeSort(_begin, _n);
+			_begin = result;
+			t_node* temp = result;
+			while (temp->next != NULL)
+				temp = temp->next;
+			_end->prev = temp;
+			temp->next = _end;
+		};
 
-		// };
+		template <class Compare>
+		void sort (Compare comp) {
+			_end->prev->next = NULL;
+			t_node* result = mergeSort(_begin, _n, comp);
+			_begin = result;
+			t_node* temp = result;
+			while (temp->next != NULL)
+				temp = temp->next;
+			_end->prev = temp;
+			temp->next = _end;
+		};
 
-		// void merge (List& x) {
-
-		// };
-
-		// template <class Compare>
-		// void merge (List& x, Compare comp) {
-
-		// };
-
-		// void sort() {
-
-		// };
-
-		// template <class Compare>
-		// void sort (Compare comp) {
-
-		// };
-
-		// void reverse() {
-
-		// };
+		void reverse() {
+			t_node *temp;
+			if (_end->prev)
+				_end->prev->next = NULL;
+			else
+				return ;
+			t_node *node = _begin;
+			while (node)
+			{
+				temp = node->next;
+				node->next = node->prev;
+				node->prev = temp;
+				node = node->prev;
+			}
+			temp = _begin;
+			_begin = _end->prev;
+			_end->prev = temp;
+			temp->next = _end;
+		};
 
 		class _List_iterator_base
 		{
@@ -571,20 +804,82 @@ namespace ft
 	};
 
 	//Non member overload
-	// template <class T, class Alloc>
-	// 	bool operator== (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	bool operator<  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	bool operator>  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
-	// template <class T, class Alloc>
-	// 	void swap (list<T,Alloc>& x, list<T,Alloc>& y);
+	template <class T, class Alloc>
+	bool operator== (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs){
+		if (lhs.size() != rhs.size())
+			return (false);
+		typename ft::List<T>::const_iterator lit = lhs.begin();
+		typename ft::List<T>::const_iterator rit = rhs.begin();
+		while (lit != lhs.end())
+		{
+			if (*lit != *rit)
+				return (false);
+			lit++;
+			rit++;
+		}
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator!= (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs){
+		if (lhs == rhs)
+			return (false);
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator< (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs){
+		typename ft::List<T>::const_iterator lit = lhs.begin();
+		typename ft::List<T>::const_iterator rit = rhs.begin();
+		while (lit != lhs.end())
+		{
+			if (rit == rhs.end() || *lit > *rit)
+				return (false);
+			else if (*lit < *rit)
+				return (true);
+			lit++;
+			rit++;
+		}
+		if (lit == lhs.end() && rit == rhs.end())
+			return (false);
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator<= (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs)
+	{
+		typename ft::List<T>::const_iterator lit = lhs.begin();
+		typename ft::List<T>::const_iterator rit = rhs.begin();
+		while (lit != lhs.end())
+		{
+			if (rit == rhs.end() || *lit > *rit)
+				return (false);
+			else if (*lit < *rit)
+				return (true);
+			lit++;
+			rit++;
+		}
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator> (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs){
+		if (lhs <= rhs)
+			return (false);
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	bool operator>= (const List<T,Alloc>& lhs, const List<T,Alloc>& rhs){
+		if (lhs < rhs)
+			return (false);
+		return (true);
+	}
+
+	template <class T, class Alloc>
+	void swap (List<T,Alloc>& x, List<T,Alloc>& y){
+		x.swap(y);
+	}
 }
 
 #endif // !LIST_HPP

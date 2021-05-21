@@ -823,6 +823,357 @@ void test_listgroup_splice()
 	std::cout << std::endl;
 }
 
+void test_listgroup_remove()
+{
+	std::cout << "list::remove" << std::endl;
+
+	int array[] = {14, 89, 7, 14};
+	std::list<int> original_list(array, array + 4);
+	ft::List<int> my_list(array, array + 4);
+
+	original_list.remove(89);
+	my_list.remove(89);
+
+	std::list<int>::iterator o_it = original_list.begin();
+	ft::List<int>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.remove(14);
+	my_list.remove(14);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.remove(1);
+	my_list.remove(1);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.remove(7);
+	my_list.remove(7);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.remove(0);
+	my_list.remove(0);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_removeif()
+{
+	std::cout << "list::remove_if" << std::endl;
+
+	int array[] = {15, 36, 7, 17, 20, 39, 4, 1};
+	std::list<int> original_list(array, array + 8);
+	ft::List<int> my_list(array, array + 8);
+
+	original_list.remove_if(single_digit);
+	my_list.remove_if(single_digit);
+
+	std::list<int>::iterator o_it = original_list.begin();
+	ft::List<int>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.remove_if(is_odd());
+	my_list.remove_if(is_odd());
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_unique()
+{
+	std::cout << "list::unique" << std::endl;
+
+	int array[] = {1, 2, 2, 3, 3, 2, 1, 1, 2};
+	std::list<int> original_list(array, array + 9);
+	ft::List<int> my_list(array, array + 9);
+
+	original_list.unique();
+	my_list.unique();
+
+	std::list<int>::iterator o_it = original_list.begin();
+	ft::List<int>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	double arrayf[] = {2.72, 3.14, 12.15, 12.77, 12.77, 15.3, 72.25, 72.25, 73.0, 73.35};
+	std::list<double> original_listf(arrayf, arrayf + 10);
+	ft::List<double> my_listf(arrayf, arrayf + 10);
+
+	original_listf.unique(same_integral_part);
+	my_listf.unique(same_integral_part);
+
+	std::list<double>::iterator of_it = original_listf.begin();
+	ft::List<double>::iterator mf_it = my_listf.begin();
+	while (of_it != original_listf.end() || mf_it != my_listf.end())
+	{
+		ASSERT_EQ(*of_it, *mf_it);
+		++of_it;
+		++mf_it;
+	}
+	ASSERT_EQ(original_listf.size(), my_listf.size());
+
+	original_listf.unique(is_near());
+	my_listf.unique(is_near());
+
+	of_it = original_listf.begin();
+	mf_it = my_listf.begin();
+	while (of_it != original_listf.end() || mf_it != my_listf.end())
+	{
+		ASSERT_EQ(*of_it, *mf_it);
+		++of_it;
+		++mf_it;
+	}
+	ASSERT_EQ(original_listf.size(), my_listf.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_merge()
+{
+	std::cout << "list::merge" << std::endl;
+
+	double array_first[] = {2.2, 2.9, 3.1};
+	double array_second[] = {1.4, 3.7, 7.1};
+	std::list<double> original_list_first(array_first, array_first + 3);
+	std::list<double> original_list_second(array_second, array_second + 3);
+	ft::List<double> my_list_first(array_first, array_first + 3);
+	ft::List<double> my_list_second(array_second, array_second + 3);
+
+	original_list_first.merge(original_list_second);
+	my_list_first.merge(my_list_second);
+
+	std::list<double>::iterator o_it = original_list_first.begin();
+	ft::List<double>::iterator m_it = my_list_first.begin();
+	while (o_it != original_list_first.end() || m_it != my_list_first.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list_second.empty(), my_list_second.empty());
+
+	original_list_second.push_back(2.1);
+	my_list_second.push_back(2.1);
+
+	original_list_first.merge(original_list_second, mycomp);
+	my_list_first.merge(my_list_second, mycomp);
+
+	o_it = original_list_first.begin();
+	m_it = my_list_first.begin();
+	while (o_it != original_list_first.end() || m_it != my_list_first.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list_second.empty(), my_list_second.empty());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_sort()
+{
+	std::cout << "list::sort" << std::endl;
+
+	std::list<std::string> original_list;
+	ft::List<std::string> my_list;
+	original_list.push_back("one");
+	original_list.push_back("two");
+	original_list.push_back("Three");
+	my_list.push_back("one");
+	my_list.push_back("two");
+	my_list.push_back("Three");
+
+	original_list.sort();
+	my_list.sort();
+
+	std::list<std::string>::iterator o_it = original_list.begin();
+	ft::List<std::string>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	original_list.sort(descendingComp);
+	my_list.sort(descendingComp);
+
+	o_it = original_list.begin();
+	m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_reverse()
+{
+	std::cout << "list::reverse" << std::endl;
+
+	std::list<int> original_list;
+	ft::List<int> my_list;
+
+	for (int i = 1; i < 10; ++i)
+	{
+		original_list.push_back(i);
+		my_list.push_back(i);
+	}
+
+	original_list.reverse();
+	my_list.reverse();
+
+	std::list<int>::iterator o_it = original_list.begin();
+	ft::List<int>::iterator m_it = my_list.begin();
+	while (o_it != original_list.end() || m_it != my_list.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_list.size(), my_list.size());
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_relationaloperators()
+{
+	std::cout << "list::relational_operators" << std::endl;
+
+	int array1[] = {1, 2, 3, 4};
+	int array2[] = {1, 2, 3, 1};
+	std::list<int> original_a(array1, array1 + 4);
+	std::list<int> original_b(array1, array1 + 4);
+	std::list<int> original_c(array2, array2 + 4);
+	ft::List<int> my_a(array1, array1 + 4);
+	ft::List<int> my_b(array1, array1 + 4);
+	ft::List<int> my_c(array2, array2 + 4);
+
+	ASSERT_EQ(original_a == original_b, my_a == my_b);
+	ASSERT_EQ(original_b == original_c, my_b == my_c);
+
+	ASSERT_EQ(original_a != original_b, my_a != my_b);
+	ASSERT_EQ(original_b != original_c, my_b != my_c);
+
+	ASSERT_EQ(original_a < original_b, my_a < my_b);
+	ASSERT_EQ(original_b < original_c, my_b < my_c);
+
+	ASSERT_EQ(original_a <= original_b, my_a <= my_b);
+	ASSERT_EQ(original_b <= original_c, my_b <= my_c);
+
+	ASSERT_EQ(original_a > original_b, my_a > my_b);
+	ASSERT_EQ(original_b > original_c, my_b > my_c);
+
+	ASSERT_EQ(original_a >= original_b, my_a >= my_b);
+	ASSERT_EQ(original_b >= original_c, my_b >= my_c);
+
+	std::cout << std::endl;
+}
+
+void test_listgroup_stdswap()
+{
+	std::cout << "list::std::swap" << std::endl;
+
+	std::list<int> original_foo(3, 100);
+	std::list<int> original_bar(5, 200);
+
+	ft::List<int> my_foo(3, 100);
+	ft::List<int> my_bar(5, 200);
+
+	std::swap(original_foo, original_bar);
+	ft::swap(my_foo, my_bar);
+
+	std::list<int>::iterator o_it = original_foo.begin();
+	ft::List<int>::iterator m_it = my_foo.begin();
+	while (o_it != original_foo.end() || m_it != my_foo.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_foo.size(), my_foo.size());
+
+	o_it = original_bar.begin();
+	m_it = my_bar.begin();
+	while (o_it != original_bar.end() || m_it != my_bar.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_bar.size(), my_bar.size());
+
+	std::cout << std::endl;
+}
+
 int main()
 {
 	test_typetrairsgroup_isintegral();
@@ -851,6 +1202,15 @@ int main()
 	test_listgroup_swap();
 	test_listgroup_resize();
 	test_listgroup_splice();
+	test_listgroup_remove();
+	test_listgroup_removeif();
+	test_listgroup_unique();
+	test_listgroup_merge();
+	test_listgroup_sort();
+	test_listgroup_reverse();
+
+	test_listgroup_relationaloperators();
+	test_listgroup_stdswap();
 
 	return (0);
 }
