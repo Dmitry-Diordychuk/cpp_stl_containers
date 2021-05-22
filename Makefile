@@ -20,7 +20,7 @@ CXXFLAGS += -std=c++98 -pedantic -g
 BUILD_DIR := ./build
 SRC_DIR := ./source
 
-SRCS := main.cpp Test.cpp TestMiscellanea.cpp
+SRCS := main.cpp test_list.cpp test_vector.cpp Test.cpp TestMiscellanea.cpp
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 INC_DIR := ./include
@@ -42,6 +42,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f valgrind-out.txt
 
 re: fclean all
 
