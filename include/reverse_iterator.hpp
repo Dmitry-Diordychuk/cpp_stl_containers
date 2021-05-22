@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/24 18:57:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/13 00:12:56 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/22 22:58:52 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,13 @@ namespace ft
 			typedef typename iterator_traits<Iterator>::pointer				pointer;
 			typedef typename iterator_traits<Iterator>::reference			reference;
 			iterator_type	_base;
+
 		public:
-			reverse_iterator(){};
+			reverse_iterator() {};
 			explicit reverse_iterator(iterator_type it) : _base(it) {};
+
 			template <class Iter>
-				reverse_iterator(const reverse_iterator<Iter>& rev_it) : _base(rev_it._base) {};
+			reverse_iterator(const reverse_iterator<Iter>& rev_it) : _base(rev_it.base()) {};
 
 			iterator_type base() const{
 				return (_base);

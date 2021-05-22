@@ -17,7 +17,7 @@
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "type_traits.hpp"
-
+#include "Allocator.hpp"
 namespace ft
 {
 	/**
@@ -26,7 +26,7 @@ namespace ft
 	 * @tparam T value type.
 	 * @tparam Alloc allocator.
 	 */
-	template <typename T, typename Alloc = std::allocator<T> >
+	template <class T, class Alloc = std::allocator<T> >
 	class List
 	{
 	public:
@@ -259,8 +259,6 @@ namespace ft
 
 		//Operator =
 		List& operator= (const List& x) {
-			if (this == &x)
-				return (*this);
 			this->_allocator = x._allocator;
 			this->_begin = this->_end;
 			this->assign(x.begin(), x.end());

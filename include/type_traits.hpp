@@ -6,11 +6,12 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/17 14:09:17 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/18 02:48:29 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/22 15:11:18 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPE_TRAITS_HPP
+#define TYPE_TRAITS_HPP
 
 #include "iterator_traits.hpp"
 

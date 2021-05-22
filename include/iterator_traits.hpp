@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/26 12:37:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/12 18:04:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/22 22:34:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ namespace ft
 	};
 
 	template <typename Iterator>
-	class iterator_traits<const Iterator*>
+	struct iterator_traits<const Iterator*>
 	{
 		typedef std::ptrdiff_t							difference_type;
 		typedef Iterator								value_type;

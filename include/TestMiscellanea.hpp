@@ -6,14 +6,26 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/16 14:40:57 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/21 23:00:36 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/22 15:09:44 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TEST_MISCELLANEA_HPP
 
-#include <string>
+#include "Test.hpp"
+#include "List.hpp"
+#include "Vector.hpp"
 
+#include <string>
+#include <list>
+#include <vector>
+#include <map>
+#include <stack>
+#include <queue>
+#include <iostream>
+
+int test_listgroup();
+int test_vectorgroup();
 class TestClass
 {
 private:
