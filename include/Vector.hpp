@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 01:11:51 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/23 00:09:59 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/23 13:09:32 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,40 @@ namespace ft
 		pointer			_finish;
 		pointer			_end_of_storage;
 
+		void deleteArray()
+		{
+			if (_start)
+			{
+				size_type i = -1;
+				while (++i < _n)
+					_allocator.destroy(_start + i);
+				_allocator.deallocate(_start, _n);
+			}
+		}
+
+		void realloc()
+		{
+			size_type new_max_n;
+			if (_n == 0)
+				new_max_n = 1;
+			else
+				new_max_n = 2 * _n;
+			if (new_max_n > _allocator.max_size())
+				return ;
+			pointer new_start = _allocator.allocate(new_max_n);
+			pointer new_finish = new_start;
+			pointer new_end_of_storage = new_start + new_max_n;
+			for (size_type i = 0; i < _n; ++i)
+			{
+				_allocator.construct(new_finish, _start[i]);
+				++new_finish;
+			}
+			deleteArray();
+			_start = new_start;
+			_finish = new_finish;
+			_end_of_storage = new_end_of_storage;
+		}
+
 	public:
 		explicit Vector (const allocator_type& alloc = allocator_type())
 		 : _allocator(alloc), _n(0), _start(NULL), _finish(NULL), _end_of_storage(NULL) {};
@@ -55,7 +89,7 @@ namespace ft
 			if (n < _allocator.max_size())
 			{
 				_start = _allocator.allocate(n);
-				_end_of_storage = _start + n - 1;
+				_end_of_storage = _start + n;
 				size_type i = -1;
 				while (++i < n)
 					_allocator.construct(_start + i, val);
@@ -76,7 +110,7 @@ namespace ft
 			}
 			_allocator = alloc;
 			_start = _allocator.allocate(_n);
-			_end_of_storage = _start + _n - 1;
+			_end_of_storage = _start + _n;
 			size_type i = 0;
 			while (first != last)
 			{
@@ -91,7 +125,7 @@ namespace ft
 			this->_allocator = x._allocator;
 			this->_n = x._n;
 			this->_start = this->_allocator.allocate(_n);
-			this->_end_of_storage = this->_start + this->_n - 1;
+			this->_end_of_storage = this->_start + this->_n;
 			const_iterator it = x.begin();
 			size_type i = 0;
 			while (it != x.end())
@@ -104,27 +138,15 @@ namespace ft
 		};
 
 		~Vector() {
-			if (_start)
-			{
-				size_type i = -1;
-				while (++i < _n)
-					_allocator.destroy(_start + i);
-				_allocator.deallocate(_start, _n);
-			}
+			deleteArray();
 		};
 
 		Vector& operator= (const Vector& x) {
-			if (_start)
-			{
-				size_type i = -1;
-				while (++i < _n)
-					_allocator.destroy(_start + i);
-				_allocator.deallocate(_start, _n);
-			}
+			deleteArray();
 			this->_allocator = x._allocator;
 			this->_n = x._n;
 			this->_start = this->_allocator.allocate(_n);
-			this->_end_of_storage = this->_start + this->_n - 1;
+			this->_end_of_storage = this->_start + this->_n;
 			const_iterator it = x.begin();
 			size_type i = 0;
 			while (it != x.end())
@@ -181,7 +203,12 @@ namespace ft
 			return (std::numeric_limits<size_type>::max() / sizeof(T));
 		};
 
-		// void resize (size_type n, value_type val = value_type());
+		// void resize (size_type n, value_type val = value_type()) {
+		// 	while (_n > n)
+		// 	{
+		// 		_allocator
+		// 	}
+		// };
 
 		// size_type capacity() const;
 
@@ -205,9 +232,23 @@ namespace ft
 		// void assign (InputIterator first, InputIterator last);
 		// void assign (size_type n, const value_type& val);
 
-		// void push_back (const value_type& val);
+		void push_back (const value_type& val) {
+			if (_finish == _end_of_storage)
+			{
+				if (_n + 1 > _allocator.max_size())
+					return ;
+				realloc();
+			}
+			_allocator.construct(_finish, val);
+			++_finish;
+			++_n;
+		};
 
-		// void pop_back();
+		void pop_back() {
+			_allocator.destroy(_finish);
+			if (_finish != _start)
+				--_finish;
+		};
 
 		// iterator insert (iterator position, const value_type& val);
 		// void insert (iterator position, size_type n, const value_type& val);

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 12:57:07 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/23 00:15:25 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/23 13:19:38 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,85 @@ void test_vectorgroup_size()
 	std::cout << std::endl;
 }
 
+void test_vectorgroup_pushback()
+{
+	std::cout << "vector::push_back" << std::endl;
+
+	std::vector<std::string> original_vector;
+	ft::Vector<std::string> my_vector;
+
+	original_vector.push_back("Hello");
+	original_vector.push_back("World");
+	original_vector.push_back("42");
+	my_vector.push_back("Hello");
+	my_vector.push_back("World");
+	my_vector.push_back("42");
+
+	std::vector<std::string>::iterator o_it = original_vector.begin();
+	ft::Vector<std::string>::iterator m_it = my_vector.begin();
+	while (o_it != original_vector.end() && m_it != my_vector.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	std::cout << std::endl;
+}
+
+void test_vectorgroup_popback()
+{
+	std::cout << "vector::pop_back" << std::endl;
+
+	std::vector<std::string> original_vector;
+	ft::Vector<std::string> my_vector;
+
+	original_vector.push_back("Hello");
+	original_vector.push_back("World");
+	original_vector.push_back("42");
+	my_vector.push_back("Hello");
+	my_vector.push_back("World");
+	my_vector.push_back("42");
+
+	original_vector.pop_back();
+	my_vector.pop_back();
+
+	std::vector<std::string>::iterator o_it = original_vector.begin();
+	ft::Vector<std::string>::iterator m_it = my_vector.begin();
+	while (o_it != original_vector.end() && m_it != my_vector.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_vector.pop_back();
+	my_vector.pop_back();
+
+	o_it = original_vector.begin();
+	m_it = my_vector.begin();
+	while (o_it != original_vector.end() && m_it != my_vector.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	original_vector.pop_back();
+	my_vector.pop_back();
+
+	o_it = original_vector.begin();
+	m_it = my_vector.begin();
+	while (o_it != original_vector.end() && m_it != my_vector.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
+	std::cout << std::endl;
+}
+
 int test_vectorgroup()
 {
 	test_vectorgroup_iterconstructor();
@@ -214,6 +293,9 @@ int test_vectorgroup()
 	test_vectorgroup_constreverseiterator();
 
 	test_vectorgroup_size();
+
+	test_vectorgroup_pushback();
+	test_vectorgroup_popback();
 
 	return (0);
 }
