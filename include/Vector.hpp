@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 01:11:51 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/24 21:07:48 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/25 18:45:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define VECTOR_HPP
 
 #include <limits>
+#include <memory>
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "type_traits.hpp"

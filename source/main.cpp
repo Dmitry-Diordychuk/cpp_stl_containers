@@ -15,6 +15,7 @@
 int main()
 {
 	//test_listgroup();
-	test_vectorgroup();
+	//test_vectorgroup();
+	test_mapgroup();
 	return (0);
 }

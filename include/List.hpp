@@ -14,10 +14,10 @@
 #define LIST_HPP
 
 #include <limits>
+#include <memory>
 #include "iterator.hpp"
 #include "reverse_iterator.hpp"
 #include "type_traits.hpp"
-#include "Allocator.hpp"
 namespace ft
 {
 	/**
