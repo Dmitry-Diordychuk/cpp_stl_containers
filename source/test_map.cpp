@@ -94,6 +94,7 @@ void test_mapgroup_copyconstructor()
 		ASSERT_EQ(o_it->first, m_it->first);
 		ASSERT_EQ(o_it->second, m_it->second);
 	}
+	ASSERT_EQ(original_map.size(), my_map.size());
 
 	o_it = copy_original_map.begin();
 	m_it = copy_my_map.begin();
@@ -102,6 +103,7 @@ void test_mapgroup_copyconstructor()
 		ASSERT_EQ(o_it->first, m_it->first);
 		ASSERT_EQ(o_it->second, m_it->second);
 	}
+	ASSERT_EQ(copy_original_map.size(), copy_my_map.size());
 
 	std::cout << std::endl;
 }
@@ -126,9 +128,66 @@ void test_mapgroup_rangeconstructor()
 		ASSERT_EQ(o_it->first, m_it->first);
 		ASSERT_EQ(o_it->second, m_it->second);
 	}
+	ASSERT_EQ(original_map.size(), my_map.size());
 
 	std::cout << std::endl;
 }
+
+// void test_mapgroup_assignoperator()
+// {
+// 	std::cout << "map::assign_operator" << std::endl;
+
+// 	std::map<char, int> original_map;
+// 	ft::Map<char, int> my_map;
+
+// 	original_map.insert(std::pair<char, int>('u', 200));
+// 	original_map.insert(std::pair<char, int>('r', 300));
+// 	original_map.insert(std::pair<char, int>('r', 400));
+// 	original_map.insert(std::pair<char, int>('a', 100));
+// 	original_map.insert(std::pair<char, int>('b', 200));
+// 	original_map.insert(std::pair<char, int>('z', 300));
+// 	original_map.insert(std::pair<char, int>('c', 400));
+// 	original_map.insert(std::pair<char, int>('f', 100));
+
+// 	my_map.insert(ft::Pair<char, int>('u', 200));
+// 	my_map.insert(ft::Pair<char, int>('r', 300));
+// 	my_map.insert(ft::Pair<char, int>('r', 400));
+// 	my_map.insert(ft::Pair<char, int>('a', 100));
+// 	my_map.insert(ft::Pair<char, int>('b', 200));
+// 	my_map.insert(ft::Pair<char, int>('z', 300));
+// 	my_map.insert(ft::Pair<char, int>('c', 400));
+// 	my_map.insert(ft::Pair<char, int>('f', 100));
+
+// 	std::map<char, int> assign_original_map;
+// 	ft::Map<char, int> assign_my_map;
+
+// 	assign_original_map.insert(std::pair<char, int>('g', 123));
+// 	assign_original_map.insert(std::pair<char, int>('x', 321));
+
+// 	assign_my_map.insert(ft::Pair<char, int>('g', 123));
+// 	assign_my_map.insert(ft::Pair<char, int>('x', 321));
+
+// 	assign_original_map = original_map;
+// 	assign_my_map = my_map;
+
+// 	std::map<char, int>::const_iterator o_it = original_map.begin();
+// 	ft::Map<char, int>::const_iterator m_it = my_map.begin();
+// 	for (;o_it != original_map.end() || m_it != my_map.end(); ++o_it, ++m_it)
+// 	{
+// 		ASSERT_EQ(o_it->first, m_it->first);
+// 		ASSERT_EQ(o_it->second, m_it->second);
+// 	}
+
+// 	o_it = assign_original_map.begin();
+// 	m_it = assign_my_map.begin();
+// 	for (;o_it != assign_original_map.end() || m_it != assign_my_map.end(); ++o_it, ++m_it)
+// 	{
+// 		ASSERT_EQ(o_it->first, m_it->first);
+// 		ASSERT_EQ(o_it->second, m_it->second);
+// 	}
+
+// 	std::cout << std::endl;
+// }
 
 void test_mapgroup_constiterator()
 {
@@ -210,6 +269,30 @@ void test_mapgroup_reverseiterator()
 	std::cout << std::endl;
 }
 
+void test_mapgroup_accessoperator()
+{
+	std::cout << "map::access_opretor" << std::endl;
+
+	std::map<char,std::string> original_map;
+	ft::Map<char,std::string> my_map;
+
+	original_map['a'] = "an element";
+	original_map['b'] = "another element";
+	original_map['c'] = original_map['b'];
+
+	my_map['a'] = "an element";
+	my_map['b'] = "another element";
+	my_map['c'] = my_map['b'];
+
+	ASSERT_EQ(original_map['a'], my_map['a']);
+	ASSERT_EQ(original_map['b'], my_map['b']);
+	ASSERT_EQ(original_map['c'], my_map['c']);
+	ASSERT_EQ(original_map['d'], my_map['d']);
+	ASSERT_EQ(original_map.size(), my_map.size());
+
+	std::cout << std::endl;
+}
+
 void test_mapgroup_insert()
 {
 	std::cout << "map::insert" << std::endl;
@@ -217,23 +300,49 @@ void test_mapgroup_insert()
 	std::map<char, int> original_map;
 	ft::Map<char, int> my_map;
 
-	original_map.insert(std::pair<char, int>('u', 200));
-	original_map.insert(std::pair<char, int>('r', 300));
-	original_map.insert(std::pair<char, int>('r', 400));
-	original_map.insert(std::pair<char, int>('a', 100));
-	original_map.insert(std::pair<char, int>('b', 200));
-	original_map.insert(std::pair<char, int>('z', 300));
-	original_map.insert(std::pair<char, int>('c', 400));
-	original_map.insert(std::pair<char, int>('f', 100));
+	std::pair<std::map<char, int>::iterator, bool> o_ins_it;
+	ft::Pair<ft::Map<char, int>::iterator, bool> m_ins_it;
 
-	my_map.insert(ft::Pair<char, int>('u', 200));
-	my_map.insert(ft::Pair<char, int>('r', 300));
-	my_map.insert(ft::Pair<char, int>('r', 400));
-	my_map.insert(ft::Pair<char, int>('a', 100));
-	my_map.insert(ft::Pair<char, int>('b', 200));
-	my_map.insert(ft::Pair<char, int>('z', 300));
-	my_map.insert(ft::Pair<char, int>('c', 400));
-	my_map.insert(ft::Pair<char, int>('f', 100));
+	o_ins_it = original_map.insert(std::pair<char, int>('u', 200));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('u', 200));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('r', 300));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('r', 300));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('r', 400));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('r', 400));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('a', 100));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('a', 100));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('b', 200));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('b', 200));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('z', 300));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('z', 300));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('c', 400));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('c', 400));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
+	o_ins_it = original_map.insert(std::pair<char, int>('f', 100));
+	m_ins_it = my_map.insert(ft::Pair<char, int>('f', 100));
+	ASSERT_EQ((*o_ins_it.first).first, (*m_ins_it.first).first);
+	ASSERT_EQ((*o_ins_it.first).second, (*m_ins_it.first).second);
+	ASSERT_EQ(o_ins_it.second, m_ins_it.second);
 
 	std::map<char, int>::iterator o_it = original_map.begin();
 	ft::Map<char, int>::iterator m_it = my_map.begin();
@@ -242,6 +351,7 @@ void test_mapgroup_insert()
 		ASSERT_EQ(o_it->first, m_it->first);
 		ASSERT_EQ(o_it->second, m_it->second);
 	}
+	ASSERT_EQ(original_map.size(), my_map.size());
 
 	std::cout << std::endl;
 }
@@ -251,7 +361,9 @@ int test_mapgroup()
 	test_pairgroup();
 	test_mapgroup_copyconstructor();
 	test_mapgroup_rangeconstructor();
+	//test_mapgroup_assignoperator();
 	test_mapgroup_reverseiterator();
+	test_mapgroup_accessoperator();
 	test_mapgroup_insert();
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/28 00:38:42 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/28 01:36:02 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ namespace ft
         value_compare   _comp;
         node*           _tree;
         node*           _nil;
+        size_type       _size;
 
         node *createNode(key_type key, mapped_type data)
         {
@@ -114,13 +115,15 @@ namespace ft
             _node_allocator.deallocate(n, 1);
         }
 
-        void createNil()
+        node *createNil()
         {
-            _nil = createNode(key_type(), mapped_type());
-            _nil->is_nil = true;
-            _nil->left = NULL;
-            _nil->right = NULL;
-            _nil->parent = NULL;
+            node *nil;
+            nil = createNode(key_type(), mapped_type());
+            nil->is_nil = true;
+            nil->left = NULL;
+            nil->right = NULL;
+            nil->parent = NULL;
+            return (nil);
         }
 
         node *cloneNode(node *prev_node)
@@ -349,8 +352,9 @@ namespace ft
         explicit Map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
             : _allocator(alloc), _comp(comp)
         {
-            createNil();
+            _nil = createNil();
             _tree = _nil;
+            _size = 0;
         };
 
         template <class InputIterator>
@@ -358,8 +362,9 @@ namespace ft
                 const allocator_type& alloc = allocator_type())
             : _allocator(alloc), _comp(comp)
         {
-            createNil();
+            _nil = createNil();
             _tree = _nil;
+            _size = 0;
             while (first != last)
             {
                 insert(*first);
@@ -367,8 +372,8 @@ namespace ft
             }
         };
 
-        Map (const Map& x) : _allocator(x._allocator), _comp(x._comp) {
-            createNil();
+        Map (const Map& x) : _allocator(x._allocator), _comp(x._comp), _size(x._size) {
+            _nil = createNil();
             if (x._tree->is_nil != true)
             {
                 this->_tree = cloneNode(x._tree);
@@ -379,10 +384,22 @@ namespace ft
             treeWalkCopy(x._tree, this->_tree);
         };
 
-        // map& operator= (const map& x);
+        // Map& operator= (const Map& x) {
+        //     if (this == &x)
+        //         return (*this);
+        //     treeWalkDelete(_tree);
+        //     deleteNode(_nil);
+        //     _tree = x._tree;
+        //     _nil = x._nil;
+        //     x._nil = createNil();
+        //     x._tree = x._nil;
+        //     return (*this);
+        // };
+
         ~Map() {
             treeWalkDelete(_tree);
             deleteNode(_nil);
+            _size = 0;
         };
 
         iterator begin() {
@@ -413,11 +430,24 @@ namespace ft
             return (const_reverse_iterator(_nil));
         };
 
-        // bool empty() const;
-        // size_type size() const;
-        // size_type max_size() const;
+        bool empty() const {
+            if (_tree == _nil)
+                return (true);
+            return (false);
+        };
 
-        // mapped_type& operator[] (const key_type& k);
+        size_type size() const {
+            return (_size);
+        };
+
+        size_type max_size() const {
+            return (std::numeric_limits<size_type>::max());
+        };
+
+        mapped_type& operator[] (const key_type& k) {
+            value_type pr(k, mapped_type());
+            return ((*((this->insert(pr)).first)).second);
+        };
 
         Pair<iterator, bool> insert (const value_type& val) {
             Pair<iterator, bool> result;
@@ -425,7 +455,10 @@ namespace ft
 
             node* result_node = rbTreeInsert(new_node);
             if (new_node->val == result_node->val)
+            {
                 result.second = true;
+                ++_size;
+            }
             else
             {
                 deleteNode(new_node);
@@ -447,7 +480,13 @@ namespace ft
         // size_type erase (const key_type& k);
         // void erase (iterator first, iterator last);
         // void swap (map& x);
-        // void clear();
+        void clear() {
+            treeWalkDelete(_tree);
+            deleteNode(_nil);
+            _nil = createNil();
+            _tree = _nil;
+            _size = 0;
+        };
 
         // key_compare key_comp() const;
         // value_compare value_comp() const;
