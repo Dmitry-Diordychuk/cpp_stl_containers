@@ -20,7 +20,7 @@ CXXFLAGS += -std=c++98 -pedantic -glldb
 BUILD_DIR := ./build
 SRC_DIR := ./source
 
-SRCS := main.cpp test_list.cpp test_vector.cpp test_map.cpp Test.cpp TestMiscellanea.cpp
+SRCS := main.cpp test_list.cpp test_vector.cpp test_map.cpp test_stack.cpp test_queue.cpp Test.cpp TestMiscellanea.cpp
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
 INC_DIR := ./include

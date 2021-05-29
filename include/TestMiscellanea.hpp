@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/16 14:40:57 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/25 15:50:18 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 16:41:34 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "List.hpp"
 #include "Vector.hpp"
 #include "Map.hpp"
+#include "Stack.hpp"
+#include "Queue.hpp"
 
 #include <string>
 #include <list>
@@ -28,6 +30,8 @@
 int test_listgroup();
 int test_vectorgroup();
 int test_mapgroup();
+int test_stackgroup();
+int test_queuegroup();
 class TestClass
 {
 private:

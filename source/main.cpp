@@ -14,8 +14,10 @@
 
 int main()
 {
-	//test_listgroup();
-	//test_vectorgroup();
+	test_listgroup();
+	test_vectorgroup();
 	test_mapgroup();
+	test_stackgroup();
+	test_queuegroup();
 	return (0);
 }
