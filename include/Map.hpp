@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 13:52:07 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 17:05:14 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ namespace ft
         };
 
         allocator_type          _allocator;
-        std::allocator<node>    _node_allocator;
 
         key_compare     _comp;
         node*           _tree;
@@ -98,8 +97,7 @@ namespace ft
 
         node *createNode(key_type key, mapped_type data)
         {
-            node* p = _node_allocator.allocate(1);
-            _node_allocator.construct(p, node());
+            node* p = new node();
             p->val = _allocator.allocate(1);
             _allocator.construct(p->val, value_type(key, data));
             p->is_red = false;
@@ -114,8 +112,7 @@ namespace ft
         {
             _allocator.destroy(n->val);
             _allocator.deallocate(n->val, 1);
-            _node_allocator.destroy(n);
-            _node_allocator.deallocate(n, 1);
+            delete n;
         }
 
         node *createNil()
@@ -131,9 +128,7 @@ namespace ft
 
         node *cloneNode(node *prev_node)
         {
-            std::allocator<node> alloc;
-            node* new_node = alloc.allocate(1);
-            alloc.construct(new_node, node());
+            node* new_node = new node();
             new_node->val = _allocator.allocate(1);
             _allocator.construct(new_node->val, value_type(prev_node->val->first, prev_node->val->second));
             new_node->is_red = prev_node->is_red;
