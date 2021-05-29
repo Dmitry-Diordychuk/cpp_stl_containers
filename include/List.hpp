@@ -808,6 +808,10 @@ namespace ft
 			temp->next = _end;
 		};
 
+		allocator_type get_allocator() const {
+			return (_allocator);
+		};
+
 		class _List_iterator_base
 		{
 			private:

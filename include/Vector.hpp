@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 01:11:51 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 17:43:44 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 18:25:26 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -521,6 +521,10 @@ namespace ft
 
 		void clear() {
 			erase(begin(), end());
+		};
+
+		allocator_type get_allocator() const {
+			return (_allocator);
 		};
 	};
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 18:02:16 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 18:26:15 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -936,6 +936,10 @@ namespace ft
 
         Pair<iterator,iterator> equal_range (const key_type& k) {
             return (Pair<iterator, iterator>(lower_bound(k), upper_bound(k)));
+        };
+
+        allocator_type get_allocator() const {
+            return (_allocator);
         };
 
         struct _Map_iterator_base
