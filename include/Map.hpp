@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 03:35:35 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 13:52:07 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -751,13 +751,13 @@ namespace ft
             node *y = _nil;
             while (x != _nil)
             {
-                if (_comp(k, x->val->first))
+                if (_comp(x->val->first, k))
+                    x = x->right;
+                else
                 {
                     y = x;
                     x = x->left;
                 }
-                else
-                    x = x->right;
             }
             if (y == _nil)
                 return (end());
@@ -769,13 +769,13 @@ namespace ft
             node *y = _nil;
             while (x != _nil)
             {
-                if (_comp(k, x->val->first))
+                if (_comp(x->val->first, k))
+                    x = x->right;
+                else
                 {
                     y = x;
                     x = x->left;
                 }
-                else
-                    x = x->right;
             }
             if (y == _nil)
                 return (end());

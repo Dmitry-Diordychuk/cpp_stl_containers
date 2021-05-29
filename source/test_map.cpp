@@ -773,6 +773,8 @@ void test_mapgroup_lowerboundupperbound()
 	ft::Map<char, int> my_map;
 	std::map<char,int>::iterator o_itlow, o_itup;
 	ft::Map<char, int>::iterator m_itlow, m_itup;
+	std::pair<std::map<char, int>::const_iterator, std::map<char, int>::const_iterator> o_ret;
+	ft::Pair<ft::Map<char, int>::const_iterator, ft::Map<char, int>::const_iterator> m_ret;
 
 	original_map['a']=20;
 	original_map['c']=40;
@@ -794,6 +796,9 @@ void test_mapgroup_lowerboundupperbound()
 		m_itlow = my_map.lower_bound (c);
 		m_itup = my_map.upper_bound (c);
 
+		o_ret = original_map.equal_range(c);
+		m_ret = my_map.equal_range(c);
+
 		if (o_itlow == original_map.end() && m_itlow == my_map.end())
 		{
 			ASSERT_TRUE(true);
@@ -810,7 +815,31 @@ void test_mapgroup_lowerboundupperbound()
 		{
 			ASSERT_EQ(o_itup->first, m_itup->first);
 		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (o_ret.first == original_map.end() && m_ret.first == my_map.end())
+		{
+			ASSERT_TRUE(true);
+		}
+		else
+		{
+			ASSERT_EQ(o_ret.first->first, m_ret.first->first);
+		}
+		if (o_ret.second == original_map.end() && m_ret.second == my_map.end())
+		{
+			ASSERT_TRUE(true);
+		}
+		else
+		{
+			ASSERT_EQ(o_ret.second->first, m_ret.second->first);
+		}
 	}
+
+	ASSERT_EQ(original_map.empty(), my_map.empty());
+
+	original_map.clear();
+	my_map.clear();
+
+	ASSERT_EQ(original_map.empty(), my_map.empty());
 
 	std::cout << std::endl;
 }
