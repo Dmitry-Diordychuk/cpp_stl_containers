@@ -38,3 +38,9 @@ void Result::print()
 	else
 		std::cout << "Location: " << _file << ", " << _line << ", " << _code << FAILED << std::endl;
 }
+
+Test::Test(bool eval, const char* file, unsigned long line, const char* code)
+{
+	Result result(eval, line, file, code);
+	result.print();
+}

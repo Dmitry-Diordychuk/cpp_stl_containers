@@ -30,6 +30,9 @@ private:
 	unsigned long	_line;
 	std::string		_file;
 	std::string		_code;
+
+	Result(Result& x);
+	Result& operator= (Result& rhs);
 public:
 	/**
 	 * @brief Construct a new Result object
@@ -74,11 +77,7 @@ public:
 	 * @param line number of the line where test presented. __LINE__
 	 * @param code code associated with test. #eval
 	 */
-	Test(bool eval, const char* file, unsigned long line, const char* code)
-	{
-		Result result(eval, line, file, code);
-		result.print();
-	}
+	Test(bool eval, const char* file, unsigned long line, const char* code);
 };
 
 template <typename T>
