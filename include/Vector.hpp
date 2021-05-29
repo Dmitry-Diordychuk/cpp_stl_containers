@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 01:11:51 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/25 18:45:57 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 17:43:44 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,15 @@ namespace ft
 			}
 			if (new_max_size > _allocator.max_size())
 				return ;
-			pointer new_start = _allocator.allocate(new_max_size);
+			pointer new_start;
+			try
+			{
+				new_start = _allocator.allocate(new_max_size);
+			}
+			catch(...)
+			{
+				throw;
+			}
 			pointer new_finish = new_start;
 			pointer new_end_of_storage = new_start + new_max_size;
 			for (size_type i = 0; i < size(); ++i)
@@ -90,7 +98,16 @@ namespace ft
 		 : _allocator(alloc), _start(NULL), _finish(NULL), _end_of_storage(NULL) {
 			if (n < _allocator.max_size())
 			{
-				_start = _allocator.allocate(n);
+				pointer temp;
+				try
+				{
+					temp = _allocator.allocate(n);
+				}
+				catch(...)
+				{
+					throw;
+				}
+				_start = temp;
 				_finish = _start;
 				_end_of_storage = _start + n;
 				size_type i = -1;
@@ -108,7 +125,16 @@ namespace ft
 			size_type len = last - first;
 
 			_allocator = alloc;
-			_start = _allocator.allocate(len);
+			pointer temp;
+			try
+			{
+				temp = _allocator.allocate(len);
+			}
+			catch(...)
+			{
+				throw;
+			}
+			_start = temp;
 			_finish = _start;
 			_end_of_storage = _start + (len);
 			while (first != last)
@@ -121,7 +147,16 @@ namespace ft
 
 		Vector (const Vector& x) {
 			this->_allocator = x._allocator;
-			this->_start = this->_allocator.allocate(x.size());
+			pointer temp;
+			try
+			{
+				temp = _allocator.allocate(x.size());
+			}
+			catch(...)
+			{
+				throw;
+			}
+			this->_start = temp;
 			this->_finish = this->_start;
 			this->_end_of_storage = this->_start + x.size();
 			const_iterator it = x.begin();
@@ -138,9 +173,18 @@ namespace ft
 		};
 
 		Vector& operator= (const Vector& x) {
+			pointer temp;
+			try
+			{
+				temp = _allocator.allocate(x.size());
+			}
+			catch(...)
+			{
+				throw;
+			}
 			deleteArray();
 			this->_allocator = x._allocator;
-			this->_start = this->_allocator.allocate(x.size());
+			this->_start = temp;
 			this->_finish = this->_start;
 			this->_end_of_storage = this->_start + x.size();
 			const_iterator it = x.begin();
@@ -200,7 +244,14 @@ namespace ft
 		void resize (size_type n, value_type val = value_type()) {
 			if (n > size())
 			{
-				realloc(n);
+				try
+				{
+					realloc(n);
+				}
+				catch(...)
+				{
+					throw;
+				}
 				while (n > size())
 					push_back(val);
 			}
@@ -221,7 +272,16 @@ namespace ft
 
 		void reserve (size_type n) {
 			if (n > size())
-				realloc(n);
+			{
+				try
+				{
+					realloc(n);
+				}
+				catch(...)
+				{
+					throw;
+				}
+			}
 		};
 
 		reference operator[] (size_type n) {
@@ -268,8 +328,17 @@ namespace ft
 		void assign (InputIterator first, InputIterator last,
 			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0) {
 			size_type len = last - first;
+			pointer temp;
+			try
+			{
+				temp = _allocator.allocate(len);
+			}
+			catch(...)
+			{
+				throw;
+			}
 			deleteArray();
-			_start = _allocator.allocate(len);
+			_start = temp;
 			_finish = _start;
 			_end_of_storage = _start + len;
 			while (first != last)
@@ -280,8 +349,17 @@ namespace ft
 		};
 
 		void assign (size_type n, const value_type& val) {
+			pointer temp;
+			try
+			{
+				temp = _allocator.allocate(n);
+			}
+			catch(...)
+			{
+				throw;
+			}
 			deleteArray();
-			_start = _allocator.allocate(n);
+			_start = temp;
 			_finish = _start;
 			_end_of_storage = _start + n;
 			for (size_type i = 0; i < n; ++i)
@@ -293,7 +371,14 @@ namespace ft
 			{
 				if (size() + 1 > _allocator.max_size())
 					return ;
-				realloc();
+				try
+				{
+					realloc();
+				}
+				catch(...)
+				{
+					throw;
+				}
 			}
 			_allocator.construct(_finish, val);
 			++_finish;
@@ -307,7 +392,16 @@ namespace ft
 		iterator insert (iterator position, const value_type& val) {
 			size_type index = position - _start;
 			if (size() + 1 > capacity())
-				realloc();
+			{
+				try
+				{
+					realloc();
+				}
+				catch(...)
+				{
+					throw;
+				}
+			}
 			pointer p = _finish;
 			while (p != _start + index)
 			{
@@ -326,7 +420,16 @@ namespace ft
 			size_type index = position - _start;
 			size_type new_size = size() + n;
 			if (new_size > capacity())
-				realloc(new_size);
+			{
+				try
+				{
+					realloc(new_size);
+				}
+				catch(...)
+				{
+					throw;
+				}
+			}
 			pointer p = _finish + n - 1;
 			while (p != _start + index)
 			{
@@ -351,7 +454,16 @@ namespace ft
 			size_type index = position - _start;
 			size_type new_size = size() + n;
 			if (new_size > capacity())
-				realloc(new_size);
+			{
+				try
+				{
+					realloc(new_size);
+				}
+				catch(...)
+				{
+					throw;
+				}
+			}
 			pointer p = _finish + n - 1;
 			while (p != _start + index)
 			{

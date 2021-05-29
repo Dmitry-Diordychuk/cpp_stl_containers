@@ -60,12 +60,33 @@ namespace ft
 		t_node				*_end;
 
 		t_node *createNode(const value_type& val) {
-			pointer p = _allocator.allocate(1);
+			pointer p;
+			t_node *node = NULL;
+			try
+			{
+				p = _allocator.allocate(1);
+			}
+			catch(...)
+			{
+				throw;
+			}
 			_allocator.construct(p, val);
-			t_node *node = new t_node();
-			node->data = p;
-			node->next = NULL;
-			node->prev = NULL;
+			try
+			{
+				node = new t_node();
+			}
+			catch(...)
+			{
+				_allocator.destroy(p);
+				_allocator.deallocate(p, 1);
+				throw;
+			}
+			if (node)
+			{
+				node->data = p;
+				node->next = NULL;
+				node->prev = NULL;
+			}
 			return (node);
 		};
 
@@ -77,10 +98,29 @@ namespace ft
 		}
 
 		t_node *createEnd() {
-			t_node *node = new t_node();
-			node->data = new T();
-			node->next = NULL;
-			node->prev = NULL;
+			t_node *node = NULL;
+			try
+			{
+				node = new t_node();
+			}
+			catch(...)
+			{
+				throw;
+			}
+			if (node)
+			{
+				try
+				{
+					node->data = new T();
+				}
+				catch(...)
+				{
+					delete node;
+					throw;
+				}
+				node->next = NULL;
+				node->prev = NULL;
+			}
 			return (node);
 		};
 
@@ -209,7 +249,14 @@ namespace ft
 			:	_allocator(alloc),
 				_n(0)
 		{
-			this->_end = createEnd();
+			try
+			{
+				this->_end = createEnd();
+			}
+			catch(...)
+			{
+				throw;
+			}
 			_begin = this->_end;
 		};
 
@@ -218,7 +265,14 @@ namespace ft
 			:	_allocator(alloc),
 				_n(0)
 		{
-			this->_end = createEnd();
+			try
+			{
+				this->_end = createEnd();
+			}
+			catch(...)
+			{
+				throw;
+			}
 			_begin = this->_end;
 			this->assign(n, val);
 		};
@@ -229,7 +283,14 @@ namespace ft
 			:	_allocator(alloc),
 				_n(0)
 		{
-			this->_end = createEnd();
+			try
+			{
+				this->_end = createEnd();
+			}
+			catch(...)
+			{
+				throw;
+			}
 			_begin = this->_end;
 			this->assign(first, last);
 		};
@@ -238,7 +299,14 @@ namespace ft
 			:	_allocator(x._allocator),
 				_n(0)
 		{
-			this->_end = createEnd();
+			try
+			{
+				this->_end = createEnd();
+			}
+			catch(...)
+			{
+				throw;
+			}
 			_begin = this->_end;
 			this->assign(x.begin(), x.end());
 		};
@@ -371,11 +439,22 @@ namespace ft
 		void push_front (const value_type& val) {
 			if (_n < max_size())
 			{
-				t_node *node = createNode(val);
-				node->next = _begin;
-				_begin->prev = node;
-				_begin = node;
-				++_n;
+				t_node *node = NULL;
+				try
+				{
+					node = createNode(val);
+				}
+				catch(...)
+				{
+					throw;
+				}
+				if (node)
+				{
+					node->next = _begin;
+					_begin->prev = node;
+					_begin = node;
+					++_n;
+				}
 			}
 		};
 
@@ -395,7 +474,15 @@ namespace ft
 		void push_back (const value_type& val) {
 			if (_n < max_size())
 			{
-				t_node *node = createNode(val);
+				t_node *node = NULL;
+				try
+				{
+					node = createNode(val);
+				}
+				catch(...)
+				{
+					throw;
+				}
 				t_node *last = lastNode();
 				if (last != NULL)
 				{
@@ -427,7 +514,15 @@ namespace ft
 		};
 
 		iterator insert (iterator position, const value_type& val) {
-			t_node		*new_node = createNode(val);
+			t_node *new_node = NULL;
+			try
+			{
+				new_node = createNode(val);
+			}
+			catch(...)
+			{
+				throw;
+			}
 			iterator	result;
 
 			insertNode(new_node, position.getCurrent()->prev, position.getCurrent());

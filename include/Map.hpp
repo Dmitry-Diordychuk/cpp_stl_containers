@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 17:05:14 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 17:55:08 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,24 @@ namespace ft
 
         node *createNode(key_type key, mapped_type data)
         {
-            node* p = new node();
-            p->val = _allocator.allocate(1);
+            node* p;
+            try
+            {
+                p = new node();
+            }
+            catch(...)
+            {
+                throw;
+            }
+            try
+            {
+                p->val = _allocator.allocate(1);
+            }
+            catch(...)
+            {
+                delete p;
+                throw;
+            }
             _allocator.construct(p->val, value_type(key, data));
             p->is_red = false;
             p->is_nil = false;
@@ -118,7 +134,14 @@ namespace ft
         node *createNil()
         {
             node *nil;
-            nil = createNode(key_type(), mapped_type());
+            try
+            {
+                nil = createNode(key_type(), mapped_type());
+            }
+            catch(...)
+            {
+                throw;
+            }
             nil->is_nil = true;
             nil->left = NULL;
             nil->right = NULL;
@@ -128,8 +151,24 @@ namespace ft
 
         node *cloneNode(node *prev_node)
         {
-            node* new_node = new node();
-            new_node->val = _allocator.allocate(1);
+            node* new_node;
+            try
+            {
+                new_node = new node();
+            }
+            catch(...)
+            {
+                throw;
+            }
+            try
+            {
+                new_node->val = _allocator.allocate(1);
+            }
+            catch(...)
+            {
+                delete new_node;
+                throw;
+            }
             _allocator.construct(new_node->val, value_type(prev_node->val->first, prev_node->val->second));
             new_node->is_red = prev_node->is_red;
             new_node->is_nil = prev_node->is_nil;
@@ -312,7 +351,14 @@ namespace ft
 
             if (temp_y == _nil || temp_x != _nil || _comp(val.first, temp_y->val->first))
             {
-                z = createNode(val.first, val.second);
+                try
+                {
+                    z = createNode(val.first, val.second);
+                }
+                catch(...)
+                {
+                    throw;
+                }
                 temp_y->left = z;
 
                 if (temp_y == _nil)
@@ -320,7 +366,14 @@ namespace ft
             }
             else
             {
-                z = createNode(val.first, val.second);
+                try
+                {
+                    z = createNode(val.first, val.second);
+                }
+                catch(...)
+                {
+                    throw;
+                }
                 temp_y->right = z;
             }
             z->parent = temp_y;
@@ -510,7 +563,14 @@ namespace ft
         explicit Map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
             : _allocator(alloc), _comp(comp)
         {
-            _nil = createNil();
+            try
+            {
+                _nil = createNil();
+            }
+            catch(...)
+            {
+                throw;
+            }
             _tree = _nil;
             _size = 0;
         };
@@ -520,7 +580,14 @@ namespace ft
                 const allocator_type& alloc = allocator_type())
             : _allocator(alloc), _comp(comp)
         {
-            _nil = createNil();
+            try
+            {
+                _nil = createNil();
+            }
+            catch(...)
+            {
+                throw;
+            }
             _tree = _nil;
             _size = 0;
             while (first != last)
@@ -531,7 +598,14 @@ namespace ft
         };
 
         Map (const Map& x) : _allocator(x._allocator), _comp(x._comp), _size(x._size) {
-            _nil = createNil();
+            try
+            {
+                _nil = createNil();
+            }
+            catch(...)
+            {
+                throw;
+            }
             if (x._tree->is_nil != true)
             {
                 this->_tree = cloneNode(x._tree);
@@ -605,7 +679,16 @@ namespace ft
 
         Pair<iterator, bool> insert (const value_type& val) {
             Pair<iterator, bool> result;
-            node *new_node = createNode(val.first, val.second);
+            node *new_node;
+            try
+            {
+                new_node = createNode(val.first, val.second);
+            }
+            catch(...)
+            {
+                throw;
+            }
+
 
             node* result_node = rbTreeInsert(new_node);
             if (new_node->val == result_node->val)
@@ -628,12 +711,30 @@ namespace ft
             if (position._cur == rbTreeMin(_tree))
             {
                 if (size() > 0 && _comp(val.first, position._cur->val->first))
-                    return (iterator(rbTreeInsert(position._cur, position._cur, val)));
+                {
+                    try
+                    {
+                        return (iterator(rbTreeInsert(position._cur, position._cur, val)));
+                    }
+                    catch(...)
+                    {
+                        throw;
+                    }
+                }
             }
             else if (position._cur == _nil)
             {
                 if (_comp(rbTreeMax(_tree)->val->first, val.first))
-                    return (rbTreeInsert(_nil, rbTreeMax(_tree), val));
+                {
+                    try
+                    {
+                        return (rbTreeInsert(_nil, rbTreeMax(_tree), val));
+                    }
+                    catch(...)
+                    {
+                        throw;
+                    }
+                }
             }
             else
             {
@@ -641,10 +742,17 @@ namespace ft
                 --prev;
                 if (_comp(prev._cur->val->first, val.first) && _comp(val.first, position._cur->val->first))
                 {
-                    if (prev._cur->right == _nil)
-                        return (rbTreeInsert(_nil, prev._cur, val));
-                    else
-                        return (rbTreeInsert(position._cur, position._cur, val));
+                    try
+                    {
+                        if (prev._cur->right == _nil)
+                            return (rbTreeInsert(_nil, prev._cur, val));
+                        else
+                            return (rbTreeInsert(position._cur, position._cur, val));
+                    }
+                    catch(...)
+                    {
+                        throw;
+                    }
                 }
             }
             return (insert(val).first);
@@ -712,9 +820,18 @@ namespace ft
         };
 
         void clear() {
+            node *temp;
+            try
+            {
+                temp = createNil();
+            }
+            catch(...)
+            {
+                throw;
+            }
             treeWalkDelete(_tree);
             deleteNode(_nil);
-            _nil = createNil();
+            _nil = temp;
             _tree = _nil;
             _size = 0;
         };
