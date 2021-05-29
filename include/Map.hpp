@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/28 01:36:02 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/29 03:35:35 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ namespace ft
         allocator_type          _allocator;
         std::allocator<node>    _node_allocator;
 
-        value_compare   _comp;
+        key_compare     _comp;
         node*           _tree;
         node*           _nil;
         size_type       _size;
@@ -104,6 +104,9 @@ namespace ft
             _allocator.construct(p->val, value_type(key, data));
             p->is_red = false;
             p->is_nil = false;
+            p->left = _nil;
+            p->right = _nil;
+            p->parent = _nil;
             return (p);
         }
 
@@ -155,7 +158,7 @@ namespace ft
         node *rbTreeSearch(node *x, key_type key)
         {
             while (x->is_nil != true && key != x->val->first)
-                if (key < x->val->first)
+                if (_comp(key, x->val->first))
                     x = x->left;
                 else
                     x = x->right;
@@ -284,28 +287,175 @@ namespace ft
             node *x = _tree;
             while (x != _nil)
             {
-                y = x;
-                if (z->val->first < x->val->first)
-                    x = x->left;
-                else if (z->val->first > x->val->first)
-                    x = x->right;
-                else
+                if (z->val->first == x->val->first)
                     return (x);
+                y = x;
+                if (_comp(z->val->first, x->val->first))
+                    x = x->left;
+                else
+                    x = x->right;
             }
             z->parent = y;
             if (y == _nil)
                 _tree = z;
-            else if (z->val->first < y->val->first)
+            else if (_comp(z->val->first, y->val->first))
                 y->left = z;
-            else if (z->val->first > y->val->first)
-                y->right = z;
             else
-                return (x);
+                y->right = z;
             z->left = _nil;
             z->right = _nil;
             z->is_red = true;
             rbInsertFixup(z);
             return (z);
+        }
+
+        node *rbTreeInsert(node *x, node *y, value_type val)
+        {
+            node *temp_x = x;
+            node *temp_y = y;
+            node *z;
+
+            if (temp_y == _nil || temp_x != _nil || _comp(val.first, temp_y->val->first))
+            {
+                z = createNode(val.first, val.second);
+                temp_y->left = z;
+
+                if (temp_y == _nil)
+                    _tree = z;
+            }
+            else
+            {
+                z = createNode(val.first, val.second);
+                temp_y->right = z;
+            }
+            z->parent = temp_y;
+            z->left = _nil;
+            z->right = _nil;
+            rbInsertFixup(z);
+            ++_size;
+            _nil->left = rbTreeMin(_tree);
+            _nil->right = rbTreeMax(_tree);
+            return (z);
+        }
+
+        void rbTranslpant(node *u, node *v)
+        {
+            if (u->parent == _nil)
+                _tree = v;
+            else if (u == u->parent->left)
+                u->parent->left = v;
+            else
+                u->parent->right = v;
+            v->parent = u->parent;
+        }
+
+        void rbDeleteFixup(node *x)
+        {
+            while (x != _tree && x->is_red == false)
+            {
+                if (x == x->parent->left)
+                {
+                    node *w = x->parent->right;
+                    if (w->is_red == true)
+                    {
+                        w->is_red = false;
+                        x->parent->is_red = true;
+                        rbLeftRotate(x->parent);
+                        w = x->parent->right;
+                    }
+                    if (w->left->is_red == false && w->right->is_red == false)
+                    {
+                        w->is_red = true;
+                        x = x->parent;
+                    }
+                    else
+                    {
+                        if (w->right->is_red == false)
+                        {
+                            w->left->is_red = false;
+                            w->is_red = true;
+                            rbRightRotate(w);
+                            w = x->parent->right;
+                        }
+                        w->is_red = x->parent->is_red;
+                        x->parent->is_red = false;
+                        w->right->is_red = false;
+                        rbLeftRotate(x->parent);
+                        x = _tree;
+                    }
+                }
+                else
+                {
+                    node *w = x->parent->left;
+                    if (w->is_red == true)
+                    {
+                        w->is_red = false;
+                        x->parent->is_red = true;
+                        rbRightRotate(x->parent);
+                        w = x->parent->left;
+                    }
+                    if (w->right->is_red == false && w->left->is_red == false)
+                    {
+                        w->is_red = true;
+                        x = x->parent;
+                    }
+                    else
+                    {
+                        if (w->left->is_red == false)
+                        {
+                            w->right->is_red = false;
+                            w->is_red = true;
+                            rbLeftRotate(w);
+                            w = x->parent->left;
+                        }
+                        w->is_red = x->parent->is_red;
+                        x->parent->is_red = false;
+                        w->left->is_red = false;
+                        rbRightRotate(x->parent);
+                        x = _tree;
+                    }
+                }
+            }
+            x->is_red = false;
+        }
+
+        void rbDelete(node *z)
+        {
+            if (z == _nil)
+                return ;
+            node *x;
+            node *y = z;
+            bool y_original_color = y->is_red;
+            if (z->left == _nil)
+            {
+                x = z->right;
+                rbTranslpant(z, z->right);
+            }
+            else if (z->right == _nil)
+            {
+                x = z->left;
+                rbTranslpant(z, z->left);
+            }
+            else
+            {
+                y = rbTreeMin(z->right);
+                y_original_color = y->is_red;
+                x = y->right;
+                if (y->parent == z)
+                    x->parent = y;
+                else
+                {
+                    rbTranslpant(y, y->right);
+                    y->right = z->right;
+                    y->right->parent = y;
+                }
+                rbTranslpant(z, y);
+                y->left = z->left;
+                y->left->parent = y;
+                y->is_red = z->is_red;
+            }
+            if (y_original_color == false)
+                rbDeleteFixup(x);
         }
 
         void treeWalkCopy(node *x, node *y)
@@ -348,6 +498,19 @@ namespace ft
             deleteNode(x);
         }
 
+        node *rbTreeSearch(const key_type key) const
+        {
+            node *x = _tree;
+            while (x != _nil && key != x->val->first)
+            {
+                if (key < x->val->first)
+                    x = x->left;
+                else
+                    x = x->right;
+            }
+            return (x);
+        }
+
     public:
         explicit Map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type())
             : _allocator(alloc), _comp(comp)
@@ -384,17 +547,13 @@ namespace ft
             treeWalkCopy(x._tree, this->_tree);
         };
 
-        // Map& operator= (const Map& x) {
-        //     if (this == &x)
-        //         return (*this);
-        //     treeWalkDelete(_tree);
-        //     deleteNode(_nil);
-        //     _tree = x._tree;
-        //     _nil = x._nil;
-        //     x._nil = createNil();
-        //     x._tree = x._nil;
-        //     return (*this);
-        // };
+        Map& operator= (const Map& x) {
+            if (this == &x)
+                return (*this);
+            this->clear();
+            this->insert(x.begin(), x.end());
+            return (*this);
+        };
 
         ~Map() {
             treeWalkDelete(_tree);
@@ -458,6 +617,8 @@ namespace ft
             {
                 result.second = true;
                 ++_size;
+                _nil->left = rbTreeMin(_tree);
+                _nil->right = rbTreeMax(_tree);
             }
             else
             {
@@ -468,18 +629,93 @@ namespace ft
             return (result);
         };
 
-        // iterator insert (iterator position, const value_type& val);
-        // template <class InputIterator>
-        // void insert (InputIterator first, InputIterator last) {
-        //     while (first != last)
-        //     {
+        iterator insert (iterator position, const value_type& val) {
+            if (position._cur == rbTreeMin(_tree))
+            {
+                if (size() > 0 && _comp(val.first, position._cur->val->first))
+                    return (iterator(rbTreeInsert(position._cur, position._cur, val)));
+            }
+            else if (position._cur == _nil)
+            {
+                if (_comp(rbTreeMax(_tree)->val->first, val.first))
+                    return (rbTreeInsert(_nil, rbTreeMax(_tree), val));
+            }
+            else
+            {
+                iterator prev = position;
+                --prev;
+                if (_comp(prev._cur->val->first, val.first) && _comp(val.first, position._cur->val->first))
+                {
+                    if (prev._cur->right == _nil)
+                        return (rbTreeInsert(_nil, prev._cur, val));
+                    else
+                        return (rbTreeInsert(position._cur, position._cur, val));
+                }
+            }
+            return (insert(val).first);
+        };
 
-        //     }
-        // };
-        // void erase (iterator position);
-        // size_type erase (const key_type& k);
-        // void erase (iterator first, iterator last);
-        // void swap (map& x);
+        template <class InputIterator>
+        void insert (InputIterator first, InputIterator last) {
+            while (first != last)
+            {
+                insert(*first);
+                ++first;
+            }
+        };
+
+        void erase (iterator position) {
+            rbDelete(position._cur);
+            deleteNode(position._cur);
+            if (_tree == _nil)
+            {
+                _nil->left = _nil;
+                _nil->right = _nil;
+            }
+            else
+            {
+                _nil->left = rbTreeMin(_tree);
+                _nil->right = rbTreeMax(_tree);
+            }
+            --_size;
+        };
+
+        size_type erase (const key_type& k) {
+            iterator it = find(k);
+            if (it != end())
+            {
+                erase(it);
+                return (1);
+            }
+            return (0);
+        };
+
+        void erase (iterator first, iterator last) {
+            while (first != last)
+            {
+                iterator next = first;
+                next++;
+                erase(first);
+                first = next;
+            }
+        };
+
+        void swap (Map& x) {
+            key_compare temp_comp = _comp;
+            node*       temp_tree = _tree;
+            node*       temp_nil = _nil;
+            size_type   temp_size = _size;
+
+            this->_comp = x._comp;
+            this->_tree = x._tree;
+            this->_nil = x._nil;
+            this->_size = x._size;
+            x._comp = temp_comp;
+            x._tree = temp_tree;
+            x._nil = temp_nil;
+            x._size = temp_size;
+        };
+
         void clear() {
             treeWalkDelete(_tree);
             deleteNode(_nil);
@@ -488,18 +724,107 @@ namespace ft
             _size = 0;
         };
 
-        // key_compare key_comp() const;
-        // value_compare value_comp() const;
+        key_compare key_comp() const {
+            return (_comp);
+        };
 
-        // iterator find (const key_type& k);
-        // const_iterator find (const key_type& k) const;
-        // size_type count (const key_type& k) const;
-        // iterator lower_bound (const key_type& k);
-        // const_iterator lower_bound (const key_type& k) const;
-        // iterator upper_bound (const key_type& k);
-        // const_iterator upper_bound (const key_type& k) const;
-        // pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
-        // pair<iterator,iterator>             equal_range (const key_type& k);
+        value_compare value_comp() const {
+            return (value_compare(_comp));
+        };
+
+        iterator find (const key_type& k) {
+            return (iterator(rbTreeSearch(k)));
+        };
+
+        const_iterator find (const key_type& k) const {
+            return (const_iterator(rbTreeSearch(k)));
+        };
+
+        size_type count (const key_type& k) const {
+            if (find(k) != end())
+                return (1);
+            return (0);
+        };
+
+        iterator lower_bound (const key_type& k) {
+            node *x = _tree;
+            node *y = _nil;
+            while (x != _nil)
+            {
+                if (_comp(k, x->val->first))
+                {
+                    y = x;
+                    x = x->left;
+                }
+                else
+                    x = x->right;
+            }
+            if (y == _nil)
+                return (end());
+            return (iterator(y));
+        };
+
+        const_iterator lower_bound (const key_type& k) const {
+            node *x = _tree;
+            node *y = _nil;
+            while (x != _nil)
+            {
+                if (_comp(k, x->val->first))
+                {
+                    y = x;
+                    x = x->left;
+                }
+                else
+                    x = x->right;
+            }
+            if (y == _nil)
+                return (end());
+            return (const_iterator(y));
+        };
+
+        iterator upper_bound (const key_type& k) {
+            node *x = _tree;
+            node *y = _nil;
+            while (x != _nil)
+            {
+                if (_comp(k, x->val->first))
+                {
+                    y = x;
+                    x = x->left;
+                }
+                else
+                    x = x->right;
+            }
+            if (y == _nil)
+                return (end());
+            return (iterator(y));
+        };
+
+        const_iterator upper_bound (const key_type& k) const {
+            node *x = _tree;
+            node *y = _nil;
+            while (x != _nil)
+            {
+                if (_comp(k, x->val->first))
+                {
+                    y = x;
+                    x = x->left;
+                }
+                else
+                    x = x->right;
+            }
+            if (y == _nil)
+                return (end());
+            return (const_iterator(y));
+        };
+
+        Pair<const_iterator,const_iterator> equal_range (const key_type& k) const {
+            return (Pair<const_iterator, const_iterator>(lower_bound(k), upper_bound(k)));
+        };
+
+        Pair<iterator,iterator> equal_range (const key_type& k) {
+            return (Pair<iterator, iterator>(lower_bound(k), upper_bound(k)));
+        };
 
         struct _Map_iterator_base
         {
@@ -562,12 +887,18 @@ namespace ft
 				};
 
 				self& operator-- () {
-					this->_cur = this->decrease(this->_cur);
+                    if (this->_cur->is_nil == true)
+                        this->_cur = this->_cur->right;
+                    else
+					    this->_cur = this->decrease(this->_cur);
 					return (*this);
 				};
 
 				self& operator-- (int) {
-					this->_cur = this->decrease(this->_cur);
+                    if (this->_cur->is_nil == true)
+                        this->_cur = this->_cur->right;
+                    else
+					    this->_cur = this->decrease(this->_cur);
 					return (*this);
 				};
 

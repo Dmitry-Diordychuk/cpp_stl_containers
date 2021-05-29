@@ -84,6 +84,7 @@ public:
 template <typename T>
 bool isEq(T a, T b)
 {
+	std::cout << a << " ?= " << b << " ";
 	if (a == b)
 		return (true);
 	return (false);
