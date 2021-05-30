@@ -150,7 +150,8 @@ namespace ft
 			node->prev = NULL;
 		}
 
-		t_node* merge(t_node* left, size_type leftN,t_node* right, size_type rightN, bool (*comp)(T a, T b))
+		template <class Compare>
+		t_node* merge(t_node* left, size_type leftN,t_node* right, size_type rightN, Compare comp)
 		{
 			t_node* result = NULL;
 			size_type totalLen = leftN + rightN;
@@ -213,12 +214,38 @@ namespace ft
 			return (right);
 		}
 
-		static bool defaultComp(value_type first, value_type second)
+		static bool defaultComp(const T& first, const T& second)
 		{
 			return (first < second);
 		}
 
-		t_node* mergeSort(t_node* list, size_type n, bool (*comp)(value_type a, value_type b) = List::defaultComp)
+		t_node* mergeSort(t_node* list, size_type n)
+		{
+			if (n < 2)
+				return (list);
+
+			size_type middle;
+			size_type reminder;
+			if (list)
+			{
+				middle = n / 2;
+				reminder = n % 2;
+			}
+			else
+			{
+				middle = 0;
+				reminder = 0;
+			}
+
+			t_node* right = splitList(list, middle);
+			t_node* left = mergeSort(list, middle, defaultComp);
+			right = mergeSort(right, middle + reminder, defaultComp);
+
+			return (merge(left, left ? middle : 0, right, right ? middle + reminder : 0, defaultComp));
+		}
+
+		template <class Compare>
+		t_node* mergeSort(t_node* list, size_type n, Compare comp)
 		{
 			if (n < 2)
 				return (list);
@@ -540,6 +567,8 @@ namespace ft
 		void insert (iterator position, InputIterator first, InputIterator last,
 			typename ft::enable_if< !ft::is_integral<InputIterator>::value >::type* = 0)
 		{
+			if (last == first)
+				return ;
 			--last;
 			for (; last != first; --last)
 				position = this->insert(position, *last);
@@ -636,6 +665,9 @@ namespace ft
 			last.getCurrent()->prev = temp;
 			if (temp)
 				temp->next = last.getCurrent();
+			x._begin = x._end;
+			while (x._begin->prev != NULL)
+				x._begin = x._begin->prev;
 			this->_n += counter;
 			x._n -= counter;
 		};
@@ -685,7 +717,7 @@ namespace ft
 
 		void unique() {
 			t_node* node = _begin->next;
-			while (node != _end)
+			while (node != NULL && node != _end)
 			{
 				if (*node->data == *node->prev->data)
 				{
@@ -707,9 +739,9 @@ namespace ft
 		template <class BinaryPredicate>
 		void unique (BinaryPredicate binary_pred) {
 			t_node* node = _begin->next;
-			while (node != _end)
+			while (node != NULL && node != _end)
 			{
-				if (binary_pred(*node->data, *node->prev->data))
+				if (binary_pred(*node->prev->data, *node->data))
 				{
 					t_node* temp = node->next;
 					if (node->prev)
@@ -729,6 +761,8 @@ namespace ft
 		void merge (List& x) {
 			t_node* rhs = x._begin;
 			t_node* lhs = _begin;
+			if (rhs == lhs)
+				return ;
 			while (rhs != x._end)
 			{
 				if (*rhs->data < *lhs->data || lhs == _end)
@@ -749,6 +783,8 @@ namespace ft
 		void merge (List& x, Compare comp) {
 			t_node* rhs = x._begin;
 			t_node* lhs = _begin;
+			if (rhs == lhs)
+				return ;
 			while (rhs != x._end)
 			{
 				if (comp(*rhs->data, *lhs->data) || lhs == _end)
@@ -766,6 +802,8 @@ namespace ft
 		};
 
 		void sort() {
+			if (_n < 2)
+				return ;
 			_end->prev->next = NULL;
 			t_node* result = mergeSort(_begin, _n);
 			_begin = result;
@@ -778,6 +816,8 @@ namespace ft
 
 		template <class Compare>
 		void sort (Compare comp) {
+			if (_n < 2)
+				return ;
 			_end->prev->next = NULL;
 			t_node* result = mergeSort(_begin, _n, comp);
 			_begin = result;

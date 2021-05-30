@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 12:53:12 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/22 13:00:08 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/30 23:07:39 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -588,6 +588,28 @@ void test_listgroup_insert()
 		++m_it;
 	}
 
+	std::list<int>				original_list2;
+	ft::List<int>				my_list2;
+	std::list<int>::iterator	o_begin = original_list.begin();
+	ft::List<int>::iterator		m_begin = my_list.begin();
+	std::list<int>::iterator	o_end = original_list.begin();
+	ft::List<int>::iterator		m_end = my_list.begin();
+
+	// o_begin++;
+	// m_begin++;
+
+	original_list2.insert(original_list2.end(), o_begin, o_end);
+	my_list2.insert(my_list2.end(), m_begin, m_end);
+
+	o_it = original_list2.begin();
+	m_it = my_list2.begin();
+	while (o_it != original_list2.end() || m_it != my_list2.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+
 	std::cout << std::endl;
 }
 
@@ -762,12 +784,12 @@ void test_listgroup_splice()
 		my_list2.push_back(i * 10);
 
 	o_it = original_list1.begin();
-	++o_it;
+	//++o_it;
 	//++o_it;
 	//++o_it;
 	//++o_it;
 	m_it = my_list1.begin();
-	++m_it;
+	//++m_it;
 	//++m_it;
 	//++m_it;
 	//++m_it;

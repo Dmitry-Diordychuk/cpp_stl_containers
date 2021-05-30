@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 01:11:51 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 18:25:26 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/30 17:23:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ namespace ft
 				size_type i = -1;
 				while (++i < size())
 					_allocator.destroy(_start + i);
-				_allocator.deallocate(_start, size());
+				_allocator.deallocate(_start, capacity());
 			}
 		}
 
@@ -406,7 +406,10 @@ namespace ft
 			while (p != _start + index)
 			{
 				if ((p - 1) >= _start)
-					*p = p[-1];
+				{
+					_allocator.construct(p, *(p - 1));
+					_allocator.destroy(p - 1);
+				}
 				--p;
 			}
 			_allocator.construct(p, val);
@@ -431,16 +434,16 @@ namespace ft
 				}
 			}
 			pointer p = _finish + n - 1;
-			while (p != _start + index)
+			while (p - n >= _start + index)
 			{
-				if ((p - n) >= _start)
-					*p = p[-n];
+				_allocator.construct(p, *(p - n));
+				_allocator.destroy(p - n);
 				--p;
 			}
 			size_type i = -1;
 			while (++i < n)
 			{
-				_allocator.construct(p + i, val);
+				_allocator.construct(p - i, val);
 				++_finish;
 			}
 		};
@@ -465,17 +468,17 @@ namespace ft
 				}
 			}
 			pointer p = _finish + n - 1;
-			while (p != _start + index)
+			while (p - n >= _start + index)
 			{
-				if ((p - n) >= _start)
-					*p = p[-n];
+				_allocator.construct(p, *(p - n));
+				_allocator.destroy(p - n);
 				--p;
 			}
 			size_type i = -1;
 			while (++i < n)
 			{
-				_allocator.construct(p + i, *first);
-				++first;
+				--last;
+				_allocator.construct(p - i, *last);
 				++_finish;
 			}
 		};
@@ -485,7 +488,8 @@ namespace ft
 			_allocator.destroy(position);
 			while (position + 1 != _finish)
 			{
-				*position = position[1];
+				_allocator.construct(position, position[1]);
+				_allocator.destroy(position + 1);
 				++position;
 			}
 			--_finish;
@@ -494,16 +498,27 @@ namespace ft
 
 		iterator erase (iterator first, iterator last) {
 			size_type len = last - first;
-			iterator result = first;
+			if (len == 0)
+				return (last);
+			iterator result = NULL;
 			while (first != _finish)
 			{
 				if (first < last)
+				{
 					_allocator.destroy(first);
+				}
 				if (first + len < _finish)
-					*first = first[len];
+				{
+					_allocator.construct(first, first[len]);
+					_allocator.destroy(first + len);
+					if (result == NULL)
+						result = first;
+				}
 				++first;
 			}
-			_finish = _finish - len;
+			_finish -= len;
+			if (result == NULL)
+				return (end());
 			return (result);
 		};
 

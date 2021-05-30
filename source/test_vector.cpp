@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/22 12:57:07 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/24 21:12:31 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/30 17:34:31 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -323,8 +323,8 @@ void test_vectorgroup_accessoperator()
 		ASSERT_EQ(original_vector[i], my_vector[i]);
 
 	std::string array[] = {"Hello", "world", "!"};
-	const std::vector<std::string> original_vector_const(array, array + 4);
-	const ft::Vector<std::string> my_vector_const(array, array + 4);
+	const std::vector<std::string> original_vector_const(array, array + 3);
+	const ft::Vector<std::string> my_vector_const(array, array + 3);
 
 	for (size_t i = 0; i < original_vector_const.size() && i < my_vector_const.size(); ++i)
 		ASSERT_EQ(original_vector_const[i], my_vector_const[i]);
@@ -535,30 +535,30 @@ void test_vectorgroup_insert()
 {
 	std::cout << "vector::insert" << std::endl;
 
-	int array1[] = {1, 2, 3};
-	std::vector<int> original_vector(array1, array1 + 3);
-	ft::Vector<int> my_vector(array1, array1 + 3);
-	std::vector<int>::iterator o_it;
-	ft::Vector<int>::iterator m_it;
+	std::string array1[] = {"Hello world", "followed the last eleme", "he new location o"};
+	std::vector<std::string> original_vector(array1, array1 + 3);
+	ft::Vector<std::string> my_vector(array1, array1 + 3);
+	std::vector<std::string>::iterator o_it;
+	ft::Vector<std::string>::iterator m_it;
 
 	o_it = original_vector.begin() + 2;
 	m_it = my_vector.begin() + 2;
 
-	o_it = original_vector.insert(o_it, 200);
-	m_it = my_vector.insert(m_it, 200);
+	o_it = original_vector.insert(o_it, "200fasdfasdfasdfasdgvdfdsfgvdsfavdfsv");
+	m_it = my_vector.insert(m_it, "200fasdfasdfasdfasdgvdfdsfgvdsfavdfsv");
 
 	ASSERT_EQ(*o_it, *m_it);
 
 	o_it += 1;
 	m_it += 1;
 
-	original_vector.insert(o_it, 2, 300);
-	my_vector.insert(m_it, 2, 300);
+	original_vector.insert(o_it, 2, "300hnbfgbngfhnfghnghnfghn");
+	my_vector.insert(m_it, 2, "300hnbfgbngfhnfghnghnfghn");
 
 	o_it = original_vector.begin() + 4;
 	m_it = my_vector.begin() + 4;
 
-	int array2[] = {4, 5, 6};
+	std::string array2[] = {"ng the element pointed by fir", "ng to a single element to be removed", "test3"};
 	original_vector.insert(o_it, array2, array2 + 3);
 	my_vector.insert(m_it, array2, array2 + 3);
 
@@ -573,6 +573,22 @@ void test_vectorgroup_insert()
 	}
 	ASSERT_EQ(original_vector.size(), my_vector.size());
 
+	////////////
+	std::vector<std::string> original_vector3;
+	ft::Vector<std::string> my_vector3;
+	original_vector3.insert(original_vector3.begin(), 1, "42dgasdfasdfasdfasdfasdfasdf");
+	my_vector3.insert(my_vector3.begin(), 1, "42dgasdfasdfasdfasdfasdfasdf");
+
+	o_it = original_vector3.begin();
+	m_it = my_vector3.begin();
+	while (o_it != original_vector3.end() && m_it != my_vector3.end())
+	{
+		ASSERT_EQ(*o_it, *m_it);
+		++o_it;
+		++m_it;
+	}
+	ASSERT_EQ(original_vector3.size(), my_vector3.size());
+
 	std::cout << std::endl;
 }
 
@@ -580,17 +596,17 @@ void test_vectorgroup_erase()
 {
 	std::cout << "vector::erase" << std::endl;
 
-	std::vector<int> original_vector;
-	ft::Vector<int> my_vector;
+	std::vector<std::string> original_vector;
+	ft::Vector<std::string> my_vector;
 
 	for (int i = 1; i <= 10; ++i)
 	{
-		original_vector.push_back(i);
-		my_vector.push_back(i);
+		original_vector.push_back("42dfasdfasdfasdfasdf");
+		my_vector.push_back("42dfasdfasdfasdfasdf");
 	}
 
-	std::vector<int>::iterator o_it;
-	ft::Vector<int>::iterator m_it;
+	std::vector<std::string>::iterator o_it;
+	ft::Vector<std::string>::iterator m_it;
 
 	o_it = original_vector.erase(original_vector.begin() + 4);
 	m_it = my_vector.erase(my_vector.begin() + 4);
@@ -608,7 +624,34 @@ void test_vectorgroup_erase()
 
 	o_it = original_vector.erase(original_vector.begin(), original_vector.end());
 	m_it = my_vector.erase(my_vector.begin(), my_vector.end());
-	ASSERT_EQ(*o_it, *m_it);
+
+	if (o_it == original_vector.end())
+	{
+		ASSERT_EQ(o_it == original_vector.end(), m_it == my_vector.end());
+	}
+	else
+		ASSERT_EQ(*o_it, *m_it);
+
+	original_vector.push_back("42dfasdfasdfasdfasdf");
+	my_vector.push_back("42dfasdfasdfasdfasdf");
+	o_it = original_vector.begin();
+	m_it = my_vector.begin();
+	o_it = original_vector.erase(original_vector.begin(), original_vector.end() - 1);
+	m_it = my_vector.erase(my_vector.begin(), my_vector.end() - 1);
+
+	original_vector.push_back("42dfasdfasdfasdfasdf");
+	my_vector.push_back("42dfasdfasdfasdfasdf");
+	o_it = original_vector.begin();
+	m_it = my_vector.begin();
+	o_it = original_vector.erase(original_vector.begin() + 1, original_vector.end() - 1);
+	m_it = my_vector.erase(my_vector.begin() + 1, my_vector.end() - 1);
+
+	if (o_it == original_vector.end())
+	{
+		ASSERT_EQ(o_it == original_vector.end(), m_it == my_vector.end());
+	}
+	else
+		ASSERT_EQ(*o_it, *m_it);
 
 	o_it = original_vector.begin();
 	m_it = my_vector.begin();

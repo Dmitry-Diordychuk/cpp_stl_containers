@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/24 21:17:35 by kdustin           #+#    #+#             */
-/*   Updated: 2021/05/29 18:26:15 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/05/30 23:04:21 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -614,6 +614,16 @@ namespace ft
             else
                 this->_tree = _nil;
             treeWalkCopy(x._tree, this->_tree);
+            if (_tree->is_nil != true)
+            {
+                _nil->left = rbTreeMin(_tree);
+                _nil->right = rbTreeMax(_tree);
+            }
+            else
+            {
+                _nil->left = _nil;
+                _nil->right = _nil;
+            }
         };
 
         Map& operator= (const Map& x) {
@@ -631,9 +641,13 @@ namespace ft
         };
 
         iterator begin() {
+            if (_tree == _nil)
+                return (end());
             return (iterator(rbTreeMin(_tree)));
         };
         const_iterator begin() const {
+            if (_tree == _nil)
+                return (end());
             return (const_iterator(rbTreeMin(_tree)));
         };
 
@@ -645,9 +659,13 @@ namespace ft
         };
 
         reverse_iterator rbegin() {
+            if (_tree == _nil)
+                return (rend());
             return (reverse_iterator(rbTreeMax(_tree)));
         };
         const_reverse_iterator rbegin() const {
+            if (_tree == _nil)
+                return (rend());
             return (const_reverse_iterator(rbTreeMax(_tree)));
         };
 
@@ -993,12 +1011,18 @@ namespace ft
 				};
 
 				self& operator++ () {
-                    this->_cur = this->increase(this->_cur);
+                    if (this->_cur->is_nil == true)
+                        this->_cur = this->_cur->left;
+                    else
+                        this->_cur = this->increase(this->_cur);
 					return (*this);
 				};
 
 				self& operator++ (int) {
-                    this->_cur = this->increase(this->_cur);
+                    if (this->_cur->is_nil == true)
+                        this->_cur = this->_cur->left;
+                    else
+                        this->_cur = this->increase(this->_cur);
 					return (*this);
 				};
 
